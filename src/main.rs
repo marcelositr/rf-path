@@ -67,7 +67,10 @@ fn run() -> Result<()> {
     println!("  FSPL: {:.3} dB", analysis.fspl_db);
     println!("  samples: {}", analysis.samples.len());
     println!("  minimum clearance: {:.3} m", analysis.min_clearance_m);
-    println!("  minimum clearance ratio: {:.3}", analysis.min_clearance_ratio);
+    println!(
+        "  minimum clearance ratio: {:.3}",
+        analysis.min_clearance_ratio
+    );
     println!("  LOS blocked: {}", analysis.los_blocked);
     println!("  60% Fresnel blocked: {}", analysis.fresnel_60_blocked);
 
