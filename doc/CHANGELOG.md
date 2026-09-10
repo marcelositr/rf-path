@@ -17,6 +17,7 @@ All notable project changes are recorded here.
 - Added Python validation workflow and responsibilities to the architecture, testing, developer guide, decisions, and roadmap.
 - Updated README with the current CLI usage and implementation status.
 - Documented the deterministic end-to-end Python reference vector and regeneration command.
+- Closed Phase 5 and moved the roadmap focus to Phase 6 presentation/export.
 
 ### Implementation
 
@@ -27,7 +28,7 @@ All notable project changes are recorded here.
 - Wired the CLI into validated antenna/frequency input, `SrtmProvider`, and `analyze_link`.
 - Added the first user-visible terminal link-analysis summary.
 - Added an independent Python-generated 21-sample end-to-end reference profile.
-- Added a Rust integration test comparing all end-to-end summary and profile quantities against the Python vector.
+- Isolated the Rust/Python differential regression in `tests/differential.rs` and compare all end-to-end summary and profile quantities against the Python vector.
 - Explicitly reject PNG/GeoJSON output flags until presentation/export implementations are connected.
 
 ### Validation
@@ -35,3 +36,5 @@ All notable project changes are recorded here.
 - CI run #52 closed SRTM validation with formatting, tests, and Clippy green.
 - CI run #73 validated the integrated `LinkAnalysis` workflow with formatting, tests, and Clippy green.
 - CI runs #75–#79 were diagnosed as repeated formatter-only failures in `src/main.rs`; the issue was corrected and CI #81 returned green.
+- CI runs #90–#93 exposed formatter-only issues introduced while integrating the differential regression; those issues were corrected without removing the regression coverage.
+- CI run #94 passed formatting, all tests, and Clippy, validating the complete current Rust/Python end-to-end differential regression.
