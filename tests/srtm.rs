@@ -184,10 +184,7 @@ fn malformed_tile_size_is_rejected() {
     file.write_all(&[0, 1]).unwrap();
 
     let result = rf_path::srtm::SrtmTile::open(&directory, key);
-    assert!(matches!(
-        result,
-        Err(rf_path::error::Error::InvalidTile(_))
-    ));
+    assert!(matches!(result, Err(rf_path::error::Error::InvalidTile(_))));
 
     fs::remove_dir_all(directory).unwrap();
 }
