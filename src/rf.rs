@@ -11,7 +11,7 @@ pub fn wavelength_m(frequency_hz: f64) -> Result<f64> {
 }
 
 pub fn fresnel_radius_m(frequency_hz: f64, d1_m: f64, d2_m: f64) -> Result<f64> {
-    if d1_m < 0.0 || d2_m < 0.0 || d1_m + d2_m <= 0.0 {
+    if !d1_m.is_finite() || !d2_m.is_finite() || d1_m < 0.0 || d2_m < 0.0 || d1_m + d2_m <= 0.0 {
         return Err(Error::InvalidInput("invalid Fresnel distances".into()));
     }
     Ok((wavelength_m(frequency_hz)? * d1_m * d2_m / (d1_m + d2_m)).sqrt())
@@ -44,6 +44,12 @@ mod tests {
     fn fresnel_radius_at_midpoint() {
         let f = fresnel_radius_m(2.4e9, 500.0, 500.0).unwrap();
         assert!((f - 5.588_235_951).abs() < 1e-9);
+    }
+
+    #[test]
+    fn fresnel_rejects_non_finite_distances() {
+        assert!(fresnel_radius_m(2.4e9, f64::NAN, 500.0).is_err());
+        assert!(fresnel_radius_m(2.4e9, 500.0, f64::INFINITY).is_err());
     }
 
     #[test]
