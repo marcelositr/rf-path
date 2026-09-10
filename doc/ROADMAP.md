@@ -63,7 +63,7 @@ Phase 3 was closed by CI run #52, which passed formatting, all tests (including 
 - [x] Add independent Python reference calculations for implemented RF primitives.
 - [x] Differential-test the effective-Earth and clearance model with explicit tolerances.
 
-The RF model uses configurable `k` with default `4/3`, the parabolic bulge approximation, linear endpoint reference altitude, and the 60% first-Fresnel classification. The implementation is now ready for integration into `LinkAnalysis`; green CI is the remaining validation gate for this increment.
+The RF model uses configurable `k` with default `4/3`, the parabolic bulge approximation, linear endpoint reference altitude, and the 60% first-Fresnel classification. The implementation is ready for integration into `LinkAnalysis`; CI is the remaining validation gate for this increment.
 
 ## Phase 5 — Link analysis
 
