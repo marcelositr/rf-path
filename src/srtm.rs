@@ -93,8 +93,8 @@ impl SrtmTile {
 
         let x0 = x.floor() as usize;
         let y0 = y.floor() as usize;
-        let x1 = x0.min(1200);
-        let y1 = y0.min(1200);
+        let x1 = (x0 + 1).min(1200);
+        let y1 = (y0 + 1).min(1200);
 
         let x_frac = x - x0 as f64;
         let y_frac = y - y0 as f64;
@@ -158,7 +158,9 @@ impl SrtmProvider {
             let tile = SrtmTile::open(&self.directory, key)?;
             self.cache.insert(key, tile);
         }
-        Ok(self.cache.get(&key).expect("tile inserted above"))
+        self.cache
+            .get(&key)
+            .ok_or_else(|| Error::InvalidTile(format!("tile cache insertion failed: {}", key.filename())))
     }
 }
 
