@@ -2,7 +2,9 @@
 
 use approx::assert_relative_eq;
 
-use rf_path::analysis::{analyze_link, ClearanceStatus, DEFAULT_FRESNEL_CLEARANCE_RATIO, DEFAULT_K_FACTOR};
+use rf_path::analysis::{
+    analyze_link, ClearanceStatus, DEFAULT_FRESNEL_CLEARANCE_RATIO, DEFAULT_K_FACTOR,
+};
 use rf_path::geo::{AntennaPoint, GeoPoint};
 use rf_path::srtm::TerrainProvider;
 
