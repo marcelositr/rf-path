@@ -42,7 +42,7 @@ fn status_label(status: ClearanceStatus) -> &'static str {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::analysis::{ProfileSample, DEFAULT_FRESNEL_CLEARANCE_RATIO, DEFAULT_K_FACTOR};
+    use crate::analysis::ProfileSample;
     use crate::geo::{AntennaPoint, GeoPoint};
 
     #[test]
@@ -110,8 +110,6 @@ mod tests {
         assert!(rendered.contains("Profile details"));
         assert!(rendered.contains("CLEAR"));
         assert!(rendered.contains("LOS_BLOCKED"));
-        assert_eq!(rendered.lines().count(), 6);
-
-        let _ = (DEFAULT_K_FACTOR, DEFAULT_FRESNEL_CLEARANCE_RATIO);
+        assert_eq!(rendered.lines().count(), 7);
     }
 }
