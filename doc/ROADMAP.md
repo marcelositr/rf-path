@@ -116,7 +116,7 @@ The reproducible-validation increment added `doc/VALIDATION.md` with Rust qualit
 
 The benchmark increment added `benches/srtm_access.rs` and a manual machine-local baseline. A 2026-09-10 run measured 96.2 ns/query for 100,000 repeated queries in one cached tile and 101.9 ns/query for 100,000 queries alternating between two cached tiles.
 
-The differential increment extends the committed end-to-end reference coverage with deterministic `FresnelPartial` and `LineOfSightBlocked` summary vectors. The vectors remain fixed test data so CI does not need to execute Python or regenerate floating-point data.
+The differential increment extends committed end-to-end reference coverage with deterministic `FresnelPartial` and `LineOfSightBlocked` summary vectors. The vectors are fixed test data so CI remains Rust-only and does not regenerate floating-point reference data.
 
 ## Future / explicitly out of v1
 
