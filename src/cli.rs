@@ -4,7 +4,11 @@ use clap::Parser;
 
 /// RF-Path command-line interface.
 #[derive(Debug, Parser)]
-#[command(name = "rf-path", version, about = "Offline RF link path analysis using SRTM terrain data")]
+#[command(
+    name = "rf-path",
+    version,
+    about = "Offline RF link path analysis using SRTM terrain data"
+)]
 pub struct Cli {
     /// Transmitter position: lat,lon,height_m.
     #[arg(long)]
