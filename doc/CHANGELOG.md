@@ -22,6 +22,7 @@ All notable project changes are recorded here.
 - Documented the presentation/export font-independence constraint.
 - Closed Phase 6 and moved the roadmap focus to Phase 7 hardening.
 - Documented the first Phase 7 CLI-hardening increment and its CI validation.
+- Recorded the second Phase 7 terrain-error coverage increment and CI validation.
 
 ### Implementation
 
@@ -48,6 +49,8 @@ All notable project changes are recorded here.
 - Added early `--srtm-dir` directory validation.
 - Added destination context to profile-image and GeoJSON write/export failures.
 - Added dedicated CLI tests for malformed analysis-control inputs.
+- Added end-to-end coverage for missing SRTM tiles.
+- Added end-to-end coverage for SRTM `NoData` at an endpoint using the correct HGT south-edge sample index.
 
 ### Validation
 
@@ -65,3 +68,7 @@ All notable project changes are recorded here.
 - Local validation on `ed2de2c` independently passed `cargo fmt --check`, `cargo test` (21 unit tests plus 10 integration/differential tests), and `cargo clippy --all-targets --all-features -- -D warnings`.
 - CI run #129 exposed only a rustfmt 1.98.1 layout mismatch in the new CLI validation function; no test or lint stage was reached.
 - CI run #130 on `7037afcc127fe324ab41e73787407d34cfef855f` passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings` after the formatter correction.
+- CI run #134 exposed an incorrect synthetic HGT `NoData` byte offset in the first end-to-end terrain-error test attempt; the failure led to a fixture correction rather than a production-code change.
+- CI run #135 still showed the fixture targeting the wrong edge of the HGT tile; the test was corrected to use the actual tile selected by the endpoint.
+- CI run #136 still exposed the HGT north-to-south row-orientation detail because latitude `1.0` is the south edge of the `south_lat=1` tile; the fixture was changed to target row `SRTM3_SAMPLES - 1` and the endpoint column directly.
+- CI run #137 on `b43bbd5ac5e43c550a85582ac01a6873f776dfd1` passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`, completing validation of missing-tile and `NoData` integration coverage.
