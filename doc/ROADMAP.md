@@ -95,6 +95,8 @@ Phase 5 is closed. The production analysis workflow, CLI wiring, and representat
 - [x] Implement SVG profile rendering.
 - [x] Implement GeoJSON export.
 - [x] Ensure terminal, image, and GeoJSON outputs consume `LinkAnalysis` data only.
+- [x] Diagnose and correct presentation/export `cargo fmt` regressions in CI #116/#118.
+- [x] Make PNG/SVG rendering independent of installed system fonts.
 - [ ] Validate the complete presentation/export CLI path through green CI.
 
 ## Phase 7 — Hardening
