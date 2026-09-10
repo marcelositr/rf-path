@@ -54,6 +54,30 @@ pub struct Cli {
     pub export_geojson: Option<String>,
 }
 
+/// Validates CLI analysis controls before any terrain access is attempted.
+pub fn validate_analysis_options(
+    samples: usize,
+    k_factor: f64,
+    fresnel_threshold: f64,
+) -> Result<()> {
+    if samples < 2 {
+        return Err(Error::InvalidInput(
+            "--samples must be at least 2".into(),
+        ));
+    }
+    if !k_factor.is_finite() || k_factor <= 0.0 {
+        return Err(Error::InvalidInput(
+            "--k-factor must be finite and positive".into(),
+        ));
+    }
+    if !fresnel_threshold.is_finite() || !(0.0..=1.0).contains(&fresnel_threshold) {
+        return Err(Error::InvalidInput(
+            "--fresnel-threshold must be between 0 and 1".into(),
+        ));
+    }
+    Ok(())
+}
+
 /// Parses a CLI antenna specification in `lat,lon,height_m` form.
 pub fn parse_antenna_point(input: &str, label: &str) -> Result<AntennaPoint> {
     let mut parts = input.split(',');
@@ -96,6 +120,30 @@ pub fn parse_antenna_point(input: &str, label: &str) -> Result<AntennaPoint> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn validates_analysis_options() {
+        assert!(validate_analysis_options(2, 4.0 / 3.0, 0.60).is_ok());
+    }
+
+    #[test]
+    fn rejects_too_few_samples() {
+        let error = validate_analysis_options(1, 4.0 / 3.0, 0.60).unwrap_err();
+        assert!(error.to_string().contains("--samples must be at least 2"));
+    }
+
+    #[test]
+    fn rejects_invalid_k_factor() {
+        assert!(validate_analysis_options(500, 0.0, 0.60).is_err());
+        assert!(validate_analysis_options(500, f64::NAN, 0.60).is_err());
+    }
+
+    #[test]
+    fn rejects_invalid_fresnel_threshold() {
+        assert!(validate_analysis_options(500, 4.0 / 3.0, -0.1).is_err());
+        assert!(validate_analysis_options(500, 4.0 / 3.0, 1.1).is_err());
+        assert!(validate_analysis_options(500, 4.0 / 3.0, f64::NAN).is_err());
+    }
 
     #[test]
     fn parses_antenna_point() {
