@@ -164,8 +164,13 @@ fn link_analysis_matches_independent_python_reference_vector() {
     assert_eq!(result.fresnel_60_blocked, reference.fresnel_60_blocked);
     assert_eq!(result.samples.len(), reference.samples.len());
 
-    for (actual, expected) in result.samples.iter().zip(reference.samples.iter()) {
-        assert_eq!(expected.index, result.samples.iter().position(|s| s.distance_m == actual.distance_m).unwrap());
+    for (actual_index, (actual, expected)) in result
+        .samples
+        .iter()
+        .zip(reference.samples.iter())
+        .enumerate()
+    {
+        assert_eq!(expected.index, actual_index);
         assert_relative_eq!(actual.distance_m, expected.distance_m, epsilon = 1e-9);
         assert_relative_eq!(actual.position.lat_deg, expected.lat_deg, epsilon = 1e-12);
         assert_relative_eq!(actual.position.lon_deg, expected.lon_deg, epsilon = 1e-12);
