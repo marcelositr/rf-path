@@ -48,7 +48,9 @@ pub fn reference_path_elevation_m(
     d2_m: f64,
 ) -> Result<f64> {
     if !tx_altitude_m.is_finite() || !rx_altitude_m.is_finite() {
-        return Err(Error::InvalidInput("endpoint altitudes must be finite".into()));
+        return Err(Error::InvalidInput(
+            "endpoint altitudes must be finite".into(),
+        ));
     }
     if !d1_m.is_finite() || !d2_m.is_finite() || d1_m < 0.0 || d2_m < 0.0 {
         return Err(Error::InvalidInput("invalid path distances".into()));
@@ -68,8 +70,10 @@ pub fn effective_reference_path_elevation_m(
     d2_m: f64,
     k_factor: f64,
 ) -> Result<f64> {
-    Ok(reference_path_elevation_m(tx_altitude_m, rx_altitude_m, d1_m, d2_m)?
-        - earth_bulge_m(d1_m, d2_m, k_factor)?)
+    Ok(
+        reference_path_elevation_m(tx_altitude_m, rx_altitude_m, d1_m, d2_m)?
+            - earth_bulge_m(d1_m, d2_m, k_factor)?,
+    )
 }
 
 /// Returns terrain clearance relative to the effective reference path.
@@ -82,15 +86,19 @@ pub fn terrain_clearance_m(
     k_factor: f64,
 ) -> Result<f64> {
     if !terrain_m.is_finite() {
-        return Err(Error::InvalidInput("terrain altitude must be finite".into()));
+        return Err(Error::InvalidInput(
+            "terrain altitude must be finite".into(),
+        ));
     }
-    Ok(effective_reference_path_elevation_m(
-        tx_altitude_m,
-        rx_altitude_m,
-        d1_m,
-        d2_m,
-        k_factor,
-    )? - terrain_m)
+    Ok(
+        effective_reference_path_elevation_m(
+            tx_altitude_m,
+            rx_altitude_m,
+            d1_m,
+            d2_m,
+            k_factor,
+        )? - terrain_m,
+    )
 }
 
 /// Classifies clearance using the requested fraction of the first Fresnel zone.
@@ -100,10 +108,14 @@ pub fn classify_clearance(
     required_fraction: f64,
 ) -> Result<ClearanceStatus> {
     if !clearance_m.is_finite() || !fresnel_radius_m.is_finite() {
-        return Err(Error::InvalidInput("clearance values must be finite".into()));
+        return Err(Error::InvalidInput(
+            "clearance values must be finite".into(),
+        ));
     }
     if fresnel_radius_m < 0.0 {
-        return Err(Error::InvalidInput("Fresnel radius cannot be negative".into()));
+        return Err(Error::InvalidInput(
+            "Fresnel radius cannot be negative".into(),
+        ));
     }
     if !required_fraction.is_finite() || !(0.0..=1.0).contains(&required_fraction) {
         return Err(Error::InvalidInput(
