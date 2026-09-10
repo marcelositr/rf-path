@@ -113,7 +113,7 @@ fn interpolation_matches_controlled_python_reference_vectors() {
 
     // Values independently evaluated with tools/reference/srtm_reference.py.
     let vectors = [
-        (1.0, 0.0, 1000.0),
+        (1.0 - 0.25 / 1200.0, 0.0, 1002.5),
         (
             1.0 - 600.5 / 1200.0,
             400.25 / 1200.0,
