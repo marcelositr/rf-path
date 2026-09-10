@@ -15,7 +15,9 @@ pub fn parse_frequency_hz(input: &str) -> Result<f64> {
     } else if let Some(v) = value.strip_suffix("hz") {
         (v, 1.0)
     } else {
-        return Err(Error::InvalidInput(format!("frequency must include Hz/kHz/MHz/GHz: {input}")));
+        return Err(Error::InvalidInput(format!(
+            "frequency must include Hz/kHz/MHz/GHz: {input}"
+        )));
     };
 
     let hz = number
@@ -24,7 +26,9 @@ pub fn parse_frequency_hz(input: &str) -> Result<f64> {
         .map_err(|_| Error::InvalidInput(format!("invalid frequency: {input}")))?
         * multiplier;
     if !hz.is_finite() || hz <= 0.0 {
-        return Err(Error::InvalidInput(format!("frequency must be positive: {input}")));
+        return Err(Error::InvalidInput(format!(
+            "frequency must be positive: {input}"
+        )));
     }
     Ok(hz)
 }
