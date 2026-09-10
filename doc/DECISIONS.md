@@ -171,3 +171,15 @@ Reference implementations should use straightforward, readable algorithms and sm
 Neither Python nor Rust may silently redefine the project's behavior. The specification and accepted engineering decisions remain authoritative.
 
 **Reason:** Otherwise the two implementations could agree while both implement the wrong model.
+
+## D020 — Effective Earth curvature uses a configurable k-factor and parabolic bulge
+
+**Status:** Accepted / Provisional
+
+The effective radius is `R_eff = k * R_e`, with default `k = 4/3`. For a sampled point with endpoint distances `d1` and `d2` and total distance `D = d1 + d2`, the effective-Earth bulge is approximated as:
+
+`bulge = d1 * d2 / (2 * R_eff)`
+
+The reference path is the linear interpolation of the absolute endpoint antenna altitudes minus this bulge. Terrain clearance is then `effective_reference_path - terrain`.
+
+**Reason:** This gives one explicit, auditable curvature convention for v1 and avoids applying Earth curvature twice in different layers. The approximation is intentionally isolated so a more exact propagation model can replace it later without changing the surrounding analysis contract.
