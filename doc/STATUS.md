@@ -2,11 +2,11 @@
 
 ## Current phase
 
-**Phase 5 — Link analysis**
+**Phase 6 — Presentation and export**
 
 ## Current state
 
-The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, integrated `LinkAnalysis` workflow, and CLI execution path are implemented. The project now also contains an independent Python-generated end-to-end reference vector covering a deterministic 21-sample flat-terrain profile; the Rust integration suite compares the complete summary and every profile sample against that vector with quantity-specific tolerances.
+The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, integrated `LinkAnalysis` workflow, CLI execution path, and representative Rust/Python end-to-end differential regression are implemented and validated. CI #94 is green with formatting, tests, and Clippy passing.
 
 PNG/SVG rendering and GeoJSON export remain separate presentation/export work. Their CLI flags are recognized but currently rejected with an explicit message rather than being silently ignored.
 
@@ -64,13 +64,14 @@ PNG/SVG rendering and GeoJSON export remain separate presentation/export work. T
 - [x] Correct the formatter-only failure in `src/main.rs`.
 - [x] Add an independent Python end-to-end `LinkAnalysis` reference generator.
 - [x] Add the generated 21-sample Rust/Python differential regression vector.
-- [x] Add Rust integration assertions for all reference summary and profile quantities.
-- [x] Diagnose CI #90 as a formatter-only failure in `tests/integration.rs`.
-- [x] Correct the formatter-only failure in the differential integration test.
+- [x] Isolate the Rust/Python differential regression in `tests/differential.rs`.
+- [x] Diagnose CI #90–#93 as formatter-only failures during differential-test integration.
+- [x] Correct the differential-test formatting without removing its coverage.
+- [x] Validate the corrected differential regression through green CI (#94).
 
 ## Current task
 
-Validate the corrected Rust/Python end-to-end differential test through green CI. Then close Phase 5 and move to Phase 6 presentation/export, starting with a terminal profile/details view before image and GeoJSON outputs.
+Close Phase 5 formally in the documentation and begin Phase 6 with the terminal profile/details renderer in `src/render.rs`. The renderer must consume `LinkAnalysis` only and must not recalculate RF or terrain math.
 
 ## Known constraints
 
@@ -85,11 +86,11 @@ Validate the corrected Rust/Python end-to-end differential test through green CI
 
 ## Next recommended task
 
-Verify the corrected differential test through the current CI run. Once green, mark the representative Rust/Python end-to-end comparison complete, close Phase 5, and begin the terminal profile/details renderer in `src/render.rs`.
+Implement the terminal profile/details renderer in `src/render.rs`, add deterministic renderer tests, wire it into the CLI, and keep PNG/SVG/GeoJSON as subsequent Phase 6 increments.
 
 ## Validation
 
-CI #81 validated the CLI wiring with formatting, tests, and Clippy green. CI #90 failed only at `cargo fmt --check` on the new differential test; the formatter corrections are now committed and the following CI run is pending.
+CI #94 is green with `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings` all successful. The run validates the current Rust/Python end-to-end differential regression as part of the full Rust test suite.
 
 ## Continuity note
 
