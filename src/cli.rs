@@ -61,9 +61,7 @@ pub fn validate_analysis_options(
     fresnel_threshold: f64,
 ) -> Result<()> {
     if samples < 2 {
-        return Err(Error::InvalidInput(
-            "--samples must be at least 2".into(),
-        ));
+        return Err(Error::InvalidInput("--samples must be at least 2".into()));
     }
     if !k_factor.is_finite() || k_factor <= 0.0 {
         return Err(Error::InvalidInput(
