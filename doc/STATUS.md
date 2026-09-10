@@ -2,15 +2,15 @@
 
 ## Current phase
 
-**Phase 6 — Presentation and export**
+**Phase 7 — Hardening**
 
 ## Current state
 
-The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, integrated `LinkAnalysis` workflow, CLI execution path, Rust/Python differential regression, and presentation/export layers are implemented. The CLI supports the detailed terminal profile, PNG/SVG profile charts, and GeoJSON export, all downstream of the same `LinkAnalysis` result.
+The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, integrated `LinkAnalysis` workflow, CLI execution path, Rust/Python differential regression, and presentation/export layers are implemented and validated. The CLI supports the detailed terminal profile, PNG/SVG profile charts, and GeoJSON export, all downstream of the same `LinkAnalysis` result.
 
-The first presentation/export CI cycle exposed two formatting-only failures in the new renderer/export files. Those were corrected. A local test then exposed a host-environment font dependency in Plotters; graphical rendering is now deliberately font-independent so PNG/SVG generation does not require an installed system font.
+Phase 6 presentation/export work is now closed. PNG/SVG rendering is deliberately font-independent so graphical generation does not require an installed system font, while the labelled terminal profile remains the human-readable presentation.
 
-The remaining Phase 6 work is CI validation of this corrected presentation/export path. After that, development moves to Phase 7 hardening.
+The corrected presentation/export path has been validated both locally and through GitHub Actions on commit `ed2de2c42c50a1d3177e8ac0b9a826fed0fc67bc`: formatting, all tests, and Clippy passed.
 
 ## Completed
 
@@ -90,10 +90,11 @@ The remaining Phase 6 work is CI validation of this corrected presentation/expor
 - [x] Correct presentation/export formatting for the current rustfmt 1.98.1.
 - [x] Diagnose the local PNG/SVG test failure caused by unavailable host fonts in Plotters.
 - [x] Make PNG/SVG rendering independent of installed system fonts while preserving the same analysis curves.
+- [x] Validate the complete presentation/export path through green CI on `ed2de2c`.
 
 ## Current task
 
-Run and validate the complete presentation/export path through CI. The next Phase 7 increment should focus on CLI diagnostics, malformed inputs, missing tiles/NoData scenarios, numerical edge cases, and reproducible validation examples.
+Begin Phase 7 hardening with CLI diagnostics and malformed-input coverage. Prioritize user-facing error clarity without changing the established numerical model or presentation/export data flow.
 
 ## Known constraints
 
@@ -109,11 +110,11 @@ Run and validate the complete presentation/export path through CI. The next Phas
 
 ## Next recommended task
 
-Validate the corrected image/GeoJSON code locally and through GitHub Actions. If green, begin Phase 7 with CLI diagnostics and malformed-input coverage.
+Improve CLI diagnostics and add malformed-input coverage, starting with invalid combinations of required options, unreadable SRTM paths, invalid sampling parameters, and clearly formatted user-facing errors.
 
 ## Validation
 
-The repository's last explicitly verified green CI state before the presentation/export implementation was CI #107, which passed formatting, tests, and Clippy after the terminal-profile test correction. CI #116 and #118 were formatting-only failures in the new presentation/export code. The current commit contains the corresponding formatting and font-independence fixes; a fresh CI result is still required.
+Local validation on Rust 1.97.1 at `ed2de2c` passed `cargo fmt --check`, `cargo test` (21 unit tests plus 10 integration/differential tests), and `cargo clippy --all-targets --all-features -- -D warnings`. GitHub Actions on the same commit also passed `cargo fmt --check`, `cargo test`, and Clippy.
 
 ## Continuity note
 
