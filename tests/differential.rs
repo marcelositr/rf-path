@@ -3,9 +3,7 @@
 use approx::assert_relative_eq;
 use serde::Deserialize;
 
-use rf_path::analysis::{
-    analyze_link, DEFAULT_FRESNEL_CLEARANCE_RATIO, DEFAULT_K_FACTOR,
-};
+use rf_path::analysis::{analyze_link, DEFAULT_FRESNEL_CLEARANCE_RATIO, DEFAULT_K_FACTOR};
 use rf_path::geo::{AntennaPoint, GeoPoint};
 use rf_path::srtm::TerrainProvider;
 
