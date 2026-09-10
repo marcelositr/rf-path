@@ -21,7 +21,7 @@ pub enum ClearanceStatus {
     LineOfSightBlocked,
 }
 
-/// One auditable point in the sampled RF path profile.
+/// One auditable point in a sampled RF path profile.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ProfileSample {
     pub distance_m: f64,
@@ -73,7 +73,11 @@ pub fn effective_earth_radius_m(k_factor: f64) -> Result<f64> {
     if !k_factor.is_finite() || k_factor <= 0.0 {
         return Err(Error::InvalidInput("k-factor must be positive".into()));
     }
-    Ok(k_factor * EARTH_RADIUS_M)
+    let radius = k_factor * EARTH_RADIUS_M;
+    if !radius.is_finite() || radius <= 0.0 {
+        return Err(Error::InvalidInput("effective Earth radius is not finite".into()));
+    }
+    Ok(radius)
 }
 
 /// Returns the conventional parabolic Earth-curvature bulge between two points.
@@ -86,7 +90,11 @@ pub fn earth_bulge_m(d1_m: f64, d2_m: f64, k_factor: f64) -> Result<f64> {
         return Err(Error::InvalidInput("path distance must be positive".into()));
     }
     let radius = effective_earth_radius_m(k_factor)?;
-    Ok(d1_m * d2_m / (2.0 * radius))
+    let bulge = d1_m * d2_m / (2.0 * radius);
+    if !bulge.is_finite() {
+        return Err(Error::InvalidInput("Earth-curvature bulge is not finite".into()));
+    }
+    Ok(bulge)
 }
 
 /// Linearly interpolates the absolute endpoint altitudes along the path.
@@ -313,6 +321,11 @@ mod tests {
     fn default_k_factor_scales_earth_radius() {
         let radius = effective_earth_radius_m(DEFAULT_K_FACTOR).unwrap();
         assert!((radius - EARTH_RADIUS_M * 4.0 / 3.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn extreme_k_factor_is_rejected_before_overflow() {
+        assert!(effective_earth_radius_m(f64::MAX).is_err());
     }
 
     #[test]
