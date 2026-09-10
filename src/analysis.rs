@@ -21,7 +21,7 @@ pub enum ClearanceStatus {
     LineOfSightBlocked,
 }
 
-/// One auditable point in a sampled RF path profile.
+/// One auditable point in the sampled RF path profile.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ProfileSample {
     pub distance_m: f64,
@@ -205,6 +205,8 @@ pub fn analyze_link<T: TerrainProvider>(
             "RX antenna height must be finite and non-negative".into(),
         ));
     }
+    GeoPoint::new(tx.position.lat_deg, tx.position.lon_deg)?;
+    GeoPoint::new(rx.position.lat_deg, rx.position.lon_deg)?;
     if samples < 2 {
         return Err(Error::InvalidInput("samples must be at least 2".into()));
     }
