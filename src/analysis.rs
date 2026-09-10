@@ -47,7 +47,7 @@ pub struct Obstacle {
     pub clearance_ratio: f64,
 }
 
-/// Complete calculated link-path result. Rendering/export layers consume this model.
+/// Complete calculated link analysis. Rendering/export layers consume this model.
 #[derive(Debug, Clone, PartialEq)]
 pub struct LinkAnalysis {
     pub distance_m: f64,
@@ -214,17 +214,17 @@ pub fn analyze_link<T: TerrainProvider>(
             "Fresnel clearance fraction must be between 0 and 1".into(),
         ));
     }
-
-    let distance_m = great_circle_distance_m(tx.position, rx.position);
-    if distance_m <= 0.0 {
-        return Err(Error::InvalidInput(
-            "TX and RX must be different points".into(),
-        ));
-    }
-    let wavelength_m = SPEED_OF_LIGHT_M_S / frequency_hz;
     if !frequency_hz.is_finite() || frequency_hz <= 0.0 {
         return Err(Error::InvalidInput("frequency must be positive".into()));
     }
+
+    let distance_m = great_circle_distance_m(tx.position, rx.position);
+    if distance_m <= 0.0 || !distance_m.is_finite() {
+        return Err(Error::InvalidInput(
+            "TX and RX must be different finite points".into(),
+        ));
+    }
+    let wavelength_m = SPEED_OF_LIGHT_M_S / frequency_hz;
 
     let tx_ground_m = terrain.elevation_at(tx.position)?;
     let rx_ground_m = terrain.elevation_at(rx.position)?;
