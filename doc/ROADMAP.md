@@ -45,8 +45,8 @@ The roadmap is intentionally incremental. Each phase should leave the repository
 - [x] Support multiple tiles along a path.
 - [x] Add synthetic HGT fixtures/tests.
 - [x] Add Python reference checks for tile/index/interpolation behavior.
-- [ ] Add explicit Rust/Python differential vectors for controlled SRTM cases.
-- [ ] Strengthen boundary and malformed-fixture coverage.
+- [x] Add explicit Rust/Python differential vectors for controlled SRTM cases.
+- [x] Strengthen boundary and malformed-fixture coverage.
 - [ ] Validate the complete SRTM test suite through green CI.
 
 ## Phase 4 — RF model
