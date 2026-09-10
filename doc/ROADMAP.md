@@ -115,6 +115,8 @@ The first Phase 7 increment validates analysis controls before terrain access, c
 
 The second Phase 7 increment adds end-to-end coverage for missing SRTM tiles and endpoint `NoData`. The tests verify that terrain access failures remain explicit and that the analysis does not invent replacement elevation data. CI run #137 passed formatting, tests, and Clippy after correcting the synthetic HGT fixture to target the actual south-edge sample cell.
 
+The numerical edge-case increment hardens non-finite RF distances, overflow-safe Fresnel arithmetic, effective Earth-radius/bulge validation, antipodal great-circle interpolation, direct-coordinate validation in `analyze_link`, and early frequency validation. Deterministic unit/integration tests cover these cases; CI validation is pending on the current head.
+
 ## Future / explicitly out of v1
 
 Potential later work may include:
