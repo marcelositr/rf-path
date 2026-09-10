@@ -1,7 +1,10 @@
-//! Link-path geometry used to evaluate effective Earth curvature and clearance.
+//! Link-path analysis orchestration and structured results.
 
 use crate::error::{Error, Result};
-use crate::geo::EARTH_RADIUS_M;
+use crate::geo::{great_circle_distance_m, sample_great_circle, AntennaPoint, GeoPoint, EARTH_RADIUS_M};
+use crate::rf::{free_space_path_loss_db, fresnel_radius_m};
+use crate::srtm::TerrainProvider;
+use crate::units::SPEED_OF_LIGHT_M_S;
 
 /// Default effective-Earth k-factor used by RF-Path.
 pub const DEFAULT_K_FACTOR: f64 = 4.0 / 3.0;
@@ -16,6 +19,53 @@ pub enum ClearanceStatus {
     LineOfSightBlocked,
 }
 
+/// One auditable point in a sampled RF path profile.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct ProfileSample {
+    pub distance_m: f64,
+    pub position: GeoPoint,
+    pub terrain_m: f64,
+    pub los_m: f64,
+    pub earth_bulge_m: f64,
+    pub fresnel_radius_m: f64,
+    pub clearance_m: f64,
+    pub clearance_ratio: f64,
+    pub status: ClearanceStatus,
+}
+
+/// Highest-impact obstruction point in the sampled profile.
+#[derive(Debug, Clone, Copy, PartialEq)]
+pub struct Obstacle {
+    pub distance_m: f64,
+    pub position: GeoPoint,
+    pub terrain_m: f64,
+    pub los_m: f64,
+    pub fresnel_radius_m: f64,
+    pub clearance_m: f64,
+    pub clearance_ratio: f64,
+}
+
+/// Complete calculated link-path result. Rendering/export layers consume this model.
+#[derive(Debug, Clone, PartialEq)]
+pub struct LinkAnalysis {
+    pub distance_m: f64,
+    pub frequency_hz: f64,
+    pub wavelength_m: f64,
+    pub tx: AntennaPoint,
+    pub rx: AntennaPoint,
+    pub tx_ground_m: f64,
+    pub rx_ground_m: f64,
+    pub tx_altitude_m: f64,
+    pub rx_altitude_m: f64,
+    pub fspl_db: f64,
+    pub min_clearance_m: f64,
+    pub min_clearance_ratio: f64,
+    pub los_blocked: bool,
+    pub fresnel_60_blocked: bool,
+    pub worst_point: Option<Obstacle>,
+    pub samples: Vec<ProfileSample>,
+}
+
 /// Returns the effective Earth radius for the supplied k-factor.
 pub fn effective_earth_radius_m(k_factor: f64) -> Result<f64> {
     if !k_factor.is_finite() || k_factor <= 0.0 {
@@ -25,9 +75,6 @@ pub fn effective_earth_radius_m(k_factor: f64) -> Result<f64> {
 }
 
 /// Returns the conventional parabolic Earth-curvature bulge between two points.
-///
-/// The value is the apparent terrain/reference-path separation introduced by
-/// effective Earth curvature. `d1_m + d2_m` is the total path distance.
 pub fn earth_bulge_m(d1_m: f64, d2_m: f64, k_factor: f64) -> Result<f64> {
     if !d1_m.is_finite() || !d2_m.is_finite() || d1_m < 0.0 || d2_m < 0.0 {
         return Err(Error::InvalidInput("invalid path distances".into()));
@@ -70,10 +117,8 @@ pub fn effective_reference_path_elevation_m(
     d2_m: f64,
     k_factor: f64,
 ) -> Result<f64> {
-    Ok(
-        reference_path_elevation_m(tx_altitude_m, rx_altitude_m, d1_m, d2_m)?
-            - earth_bulge_m(d1_m, d2_m, k_factor)?,
-    )
+    Ok(reference_path_elevation_m(tx_altitude_m, rx_altitude_m, d1_m, d2_m)?
+        - earth_bulge_m(d1_m, d2_m, k_factor)?)
 }
 
 /// Returns terrain clearance relative to the effective reference path.
@@ -90,10 +135,13 @@ pub fn terrain_clearance_m(
             "terrain altitude must be finite".into(),
         ));
     }
-    Ok(
-        effective_reference_path_elevation_m(tx_altitude_m, rx_altitude_m, d1_m, d2_m, k_factor)?
-            - terrain_m,
-    )
+    Ok(effective_reference_path_elevation_m(
+        tx_altitude_m,
+        rx_altitude_m,
+        d1_m,
+        d2_m,
+        k_factor,
+    )? - terrain_m)
 }
 
 /// Classifies clearance using the requested fraction of the first Fresnel zone.
@@ -124,6 +172,132 @@ pub fn classify_clearance(
         return Ok(ClearanceStatus::FresnelPartial);
     }
     Ok(ClearanceStatus::Clear)
+}
+
+fn clearance_ratio(clearance_m: f64, fresnel_radius_m: f64) -> f64 {
+    if fresnel_radius_m > 0.0 {
+        clearance_m / fresnel_radius_m
+    } else if clearance_m >= 0.0 {
+        1.0
+    } else {
+        f64::NEG_INFINITY
+    }
+}
+
+/// Computes a complete auditable link analysis from a terrain provider.
+pub fn analyze_link<T: TerrainProvider>(
+    terrain: &mut T,
+    tx: AntennaPoint,
+    rx: AntennaPoint,
+    frequency_hz: f64,
+    samples: usize,
+    k_factor: f64,
+    fresnel_threshold: f64,
+) -> Result<LinkAnalysis> {
+    if !tx.antenna_height_m.is_finite() || tx.antenna_height_m < 0.0 {
+        return Err(Error::InvalidInput(
+            "TX antenna height must be finite and non-negative".into(),
+        ));
+    }
+    if !rx.antenna_height_m.is_finite() || rx.antenna_height_m < 0.0 {
+        return Err(Error::InvalidInput(
+            "RX antenna height must be finite and non-negative".into(),
+        ));
+    }
+    if samples < 2 {
+        return Err(Error::InvalidInput("samples must be at least 2".into()));
+    }
+    effective_earth_radius_m(k_factor)?;
+    if !fresnel_threshold.is_finite() || !(0.0..=1.0).contains(&fresnel_threshold) {
+        return Err(Error::InvalidInput(
+            "Fresnel clearance fraction must be between 0 and 1".into(),
+        ));
+    }
+
+    let distance_m = great_circle_distance_m(tx.position, rx.position);
+    if distance_m <= 0.0 {
+        return Err(Error::InvalidInput("TX and RX must be different points".into()));
+    }
+    let wavelength_m = SPEED_OF_LIGHT_M_S / frequency_hz;
+    if !frequency_hz.is_finite() || frequency_hz <= 0.0 {
+        return Err(Error::InvalidInput("frequency must be positive".into()));
+    }
+
+    let tx_ground_m = terrain.elevation_at(tx.position)?;
+    let rx_ground_m = terrain.elevation_at(rx.position)?;
+    let tx_altitude_m = tx_ground_m + tx.antenna_height_m;
+    let rx_altitude_m = rx_ground_m + rx.antenna_height_m;
+    let fspl_db = free_space_path_loss_db(distance_m, frequency_hz)?;
+
+    let path = sample_great_circle(tx.position, rx.position, samples)?;
+    let mut profile = Vec::with_capacity(samples);
+    for (index, position) in path.into_iter().enumerate() {
+        let fraction = index as f64 / (samples - 1) as f64;
+        let d1_m = distance_m * fraction;
+        let d2_m = distance_m - d1_m;
+        let terrain_m = terrain.elevation_at(position)?;
+        let los_m = reference_path_elevation_m(tx_altitude_m, rx_altitude_m, d1_m, d2_m)?;
+        let earth_bulge_m = earth_bulge_m(d1_m, d2_m, k_factor)?;
+        let effective_los_m = los_m - earth_bulge_m;
+        let fresnel_radius_m = fresnel_radius_m(frequency_hz, d1_m, d2_m)?;
+        let clearance_m = effective_los_m - terrain_m;
+        let status = classify_clearance(clearance_m, fresnel_radius_m, fresnel_threshold)?;
+        profile.push(ProfileSample {
+            distance_m: d1_m,
+            position,
+            terrain_m,
+            los_m: effective_los_m,
+            earth_bulge_m,
+            fresnel_radius_m,
+            clearance_m,
+            clearance_ratio: clearance_ratio(clearance_m, fresnel_radius_m),
+            status,
+        });
+    }
+
+    let worst = profile
+        .iter()
+        .min_by(|a, b| a.clearance_m.total_cmp(&b.clearance_m))
+        .copied()
+        .map(|sample| Obstacle {
+            distance_m: sample.distance_m,
+            position: sample.position,
+            terrain_m: sample.terrain_m,
+            los_m: sample.los_m,
+            fresnel_radius_m: sample.fresnel_radius_m,
+            clearance_m: sample.clearance_m,
+            clearance_ratio: sample.clearance_ratio,
+        });
+    let min_clearance_m = worst.map(|p| p.clearance_m).unwrap_or(f64::INFINITY);
+    let min_clearance_ratio = profile
+        .iter()
+        .map(|p| p.clearance_ratio)
+        .fold(f64::INFINITY, f64::min);
+    let los_blocked = profile
+        .iter()
+        .any(|p| p.status == ClearanceStatus::LineOfSightBlocked);
+    let fresnel_60_blocked = profile
+        .iter()
+        .any(|p| p.clearance_m < fresnel_threshold * p.fresnel_radius_m);
+
+    Ok(LinkAnalysis {
+        distance_m,
+        frequency_hz,
+        wavelength_m,
+        tx,
+        rx,
+        tx_ground_m,
+        rx_ground_m,
+        tx_altitude_m,
+        rx_altitude_m,
+        fspl_db,
+        min_clearance_m,
+        min_clearance_ratio,
+        los_blocked,
+        fresnel_60_blocked,
+        worst_point: worst,
+        samples: profile,
+    })
 }
 
 #[cfg(test)]
