@@ -1,12 +1,14 @@
 //! RF-Path application entry point.
 
+use std::path::Path;
 use std::process::ExitCode;
 
 use clap::Parser;
 use rf_path::analysis::analyze_link;
 use rf_path::cli::{parse_antenna_point, Cli};
 use rf_path::error::{Error, Result};
-use rf_path::render::render_terminal_profile;
+use rf_path::geojson_export::export_geojson;
+use rf_path::render::{render_profile_png, render_profile_svg, render_terminal_profile};
 use rf_path::srtm::SrtmProvider;
 use rf_path::units::parse_frequency_hz;
 
@@ -22,11 +24,6 @@ fn main() -> ExitCode {
 
 fn run() -> Result<()> {
     let cli = Cli::parse();
-    if cli.output_image.is_some() || cli.export_geojson.is_some() {
-        return Err(Error::InvalidInput(
-            "image and GeoJSON outputs are not wired into the CLI yet".into(),
-        ));
-    }
 
     let tx = parse_antenna_point(
         cli.tx
@@ -89,5 +86,33 @@ fn run() -> Result<()> {
         print!("{}", render_terminal_profile(&analysis));
     }
 
+    if let Some(path) = cli.output_image.as_deref() {
+        render_profile_image(&analysis, path)?;
+        println!("  profile image: {path}");
+    }
+
+    if let Some(path) = cli.export_geojson.as_deref() {
+        export_geojson(&analysis, path)?;
+        println!("  GeoJSON: {path}");
+    }
+
     Ok(())
+}
+
+fn render_profile_image(analysis: &rf_path::analysis::LinkAnalysis, path: &str) -> Result<()> {
+    let extension = Path::new(path)
+        .extension()
+        .and_then(|value| value.to_str())
+        .map(str::to_ascii_lowercase)
+        .ok_or_else(|| {
+            Error::InvalidInput("--output-image must use a .png or .svg extension".into())
+        })?;
+
+    match extension.as_str() {
+        "png" => render_profile_png(analysis, path),
+        "svg" => render_profile_svg(analysis, path),
+        _ => Err(Error::InvalidInput(
+            "--output-image must use a .png or .svg extension".into(),
+        )),
+    }
 }
