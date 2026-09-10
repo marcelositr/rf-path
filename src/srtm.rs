@@ -81,7 +81,10 @@ impl SrtmTile {
             )));
         }
         let offset = (row * SRTM3_SAMPLES + column) * SAMPLE_BYTES;
-        Ok(i16::from_be_bytes([self.mmap[offset], self.mmap[offset + 1]]))
+        Ok(i16::from_be_bytes([
+            self.mmap[offset],
+            self.mmap[offset + 1],
+        ]))
     }
 
     fn elevation_bilinear(&self, point: GeoPoint) -> Result<f64> {
