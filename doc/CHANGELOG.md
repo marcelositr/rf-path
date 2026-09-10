@@ -23,7 +23,9 @@ All notable project changes are recorded here.
 - Closed Phase 6 and moved the roadmap focus to Phase 7 hardening.
 - Documented the first Phase 7 CLI-hardening increment and its CI validation.
 - Recorded the second Phase 7 terrain-error coverage increment and CI validation.
-- Recorded the numerical edge-case hardening increment and its pending CI validation.
+- Recorded the numerical edge-case hardening increment and its CI validation.
+- Added `doc/VALIDATION.md` with reproducible Rust quality gates and CLI validation examples.
+- Documented the methodology for the synthetic SRTM access benchmark.
 
 ### Implementation
 
@@ -57,6 +59,7 @@ All notable project changes are recorded here.
 - Rejected antipodal great-circle interpolation where a unique shortest path is undefined.
 - Validated `analyze_link` coordinates before terrain access and frequency before wavelength derivation.
 - Added deterministic unit and integration coverage for the numerical edge cases.
+- Added a standalone `srtm_access` benchmark harness for warm single-tile and two-tile cached access.
 
 ### Validation
 
@@ -79,4 +82,5 @@ All notable project changes are recorded here.
 - CI run #136 still exposed the HGT north-to-south row-orientation detail because latitude `1.0` is the south edge of the `south_lat=1` tile; the fixture was changed to target row `SRTM3_SAMPLES - 1` and the endpoint column directly.
 - CI run #137 on `b43bbd5ac5e43c550a85582ac01a6873f776dfd1` passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`, completing validation of missing-tile and `NoData` integration coverage.
 - CI runs #148 and #149 exposed rustfmt layout regressions while adding numerical edge-case coverage; both stopped before tests and linting.
-- CI run #150 is the current validation run for the formatted edge-case integration tests on the current head; its final result is still pending.
+- CI run #155 on `066252fe6779bf0690493491a7fa5ecab9048d82` passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`, validating the numerical edge-case hardening.
+- Benchmark harness and validation documentation were added after the #155 green CI pass; no cross-machine performance baseline is recorded yet.
