@@ -25,7 +25,7 @@ All notable project changes are recorded here.
 - Recorded the second Phase 7 terrain-error coverage increment and CI validation.
 - Recorded the numerical edge-case hardening increment and its CI validation.
 - Added `doc/VALIDATION.md` with reproducible Rust quality gates and CLI validation examples.
-- Documented the methodology for the synthetic SRTM access benchmark.
+- Documented the methodology for the synthetic SRTM access benchmark and recorded its first local baseline.
 
 ### Implementation
 
@@ -74,13 +74,15 @@ All notable project changes are recorded here.
 - CI runs #116 and #118 exposed presentation/export `cargo fmt --check` regressions; those formatting issues were corrected for rustfmt 1.98.1.
 - Local validation on Rust 1.97.1 exposed a Plotters host-font failure in the PNG/SVG test; the renderer was changed to avoid text/font rendering entirely, preserving the profile curves while removing the environment dependency.
 - CI run #124 on `ed2de2c42c50a1d3177e8ac0b9a826fed0fc67bc` passed `cargo fmt --check`, `cargo test`, and Clippy, completing validation of the presentation/export path.
-- Local validation on `ed2de2c` independently passed `cargo fmt --check`, `cargo test` (21 unit tests plus 10 integration/differential tests), and `cargo clippy --all-targets --all-features -- -D warnings`.
+- Local validation on `ed2de2c` independently passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`.
 - CI run #129 exposed only a rustfmt 1.98.1 layout mismatch in the new CLI validation function; no test or lint stage was reached.
-- CI run #130 on `7037afcc127fe324ab41e73787407d34cfef855f` passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings` after the formatter correction.
-- CI run #134 exposed an incorrect synthetic HGT `NoData` byte offset in the first end-to-end terrain-error test attempt; the failure led to a fixture correction rather than a production-code change.
-- CI run #135 still showed the fixture targeting the wrong edge of the HGT tile; the test was corrected to use the actual tile selected by the endpoint.
-- CI run #136 still exposed the HGT north-to-south row-orientation detail because latitude `1.0` is the south edge of the `south_lat=1` tile; the fixture was changed to target row `SRTM3_SAMPLES - 1` and the endpoint column directly.
-- CI run #137 on `b43bbd5ac5e43c550a85582ac01a6873f776dfd1` passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`, completing validation of missing-tile and `NoData` integration coverage.
+- CI run #130 on `7037afcc127fe324ab41e73787407d34cfef855f` passed `cargo fmt --check`, `cargo test`, and Clippy after the formatter correction.
+- CI run #134 exposed an incorrect synthetic HGT `NoData` byte offset in the first terrain-error test attempt; the fixture was corrected without production-code changes.
+- CI run #135 still showed the fixture targeting the wrong edge of the HGT tile; it was corrected to use the actual tile selected by the endpoint.
+- CI run #136 exposed the HGT north-to-south row-orientation detail; the fixture was changed to target row `SRTM3_SAMPLES - 1` and the endpoint column directly.
+- CI run #137 on `b43bbd5ac5e43c550a85582ac01a6873f776dfd1` passed formatting, tests, and Clippy, completing missing-tile and `NoData` coverage.
 - CI runs #148 and #149 exposed rustfmt layout regressions while adding numerical edge-case coverage; both stopped before tests and linting.
 - CI run #155 on `066252fe6779bf0690493491a7fa5ecab9048d82` passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`, validating the numerical edge-case hardening.
-- Benchmark harness and validation documentation were added after the #155 green CI pass; no cross-machine performance baseline is recorded yet.
+- CI run #163 passed formatting, all tests, and Clippy after the benchmark/validation documentation changes.
+- Local validation on 2026-09-10 passed `cargo fmt --check`, `cargo test` (30 unit tests plus integration, geo, RF, SRTM, and differential suites), `cargo clippy --all-targets --all-features -- -D warnings`, and `cargo bench --bench srtm_access`.
+- Local SRTM benchmark baseline on 2026-09-10: 96.2 ns/query for 100,000 repeated queries in one cached tile and 101.9 ns/query for 100,000 queries alternating between two cached tiles. These are machine-local measurements, not universal performance guarantees.
