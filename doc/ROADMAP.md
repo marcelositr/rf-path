@@ -10,14 +10,18 @@ The roadmap is intentionally incremental. Each phase should leave the repository
 - [x] Define architecture.
 - [x] Record initial decisions.
 - [x] Establish project status tracking.
+- [x] Define Python reference/validation role.
+- [x] Define differential-testing strategy.
 
-## Phase 1 — Rust foundation
+## Phase 1 — Rust and validation foundation
 
 - [ ] Create `Cargo.toml`.
 - [ ] Establish Rust 2021 crate.
 - [ ] Add error handling conventions.
 - [ ] Add module skeleton.
-- [ ] Add CI-quality formatting/lint/test baseline.
+- [ ] Establish CI-quality formatting/lint/test baseline.
+- [ ] Create `tools/reference/` Python skeleton.
+- [ ] Add instructions for running reference calculations.
 
 ## Phase 2 — Geometry and units
 
@@ -26,7 +30,9 @@ The roadmap is intentionally incremental. Each phase should leave the repository
 - [ ] Implement SI unit conversions.
 - [ ] Implement great-circle distance.
 - [ ] Implement robust great-circle sampling.
-- [ ] Add deterministic geometry tests.
+- [ ] Add deterministic Rust geometry tests.
+- [ ] Add corresponding Python reference calculations.
+- [ ] Compare representative Rust/Python results with documented tolerances.
 
 ## Phase 3 — SRTM terrain
 
@@ -38,6 +44,8 @@ The roadmap is intentionally incremental. Each phase should leave the repository
 - [ ] Handle `NoData` explicitly.
 - [ ] Support multiple tiles along a path.
 - [ ] Add synthetic HGT fixtures/tests.
+- [ ] Add Python reference checks for tile/index/interpolation behavior.
+- [ ] Differential-test controlled SRTM cases.
 
 ## Phase 4 — RF model
 
@@ -47,7 +55,9 @@ The roadmap is intentionally incremental. Each phase should leave the repository
 - [ ] Implement LOS/reference-path calculations.
 - [ ] Implement clearance and classification.
 - [ ] Implement FSPL.
-- [ ] Add known-value tests.
+- [ ] Add known-value Rust tests.
+- [ ] Add independent Python reference calculations.
+- [ ] Differential-test numerical vectors with explicit tolerances.
 
 ## Phase 5 — Link analysis
 
@@ -56,6 +66,7 @@ The roadmap is intentionally incremental. Each phase should leave the repository
 - [ ] Identify worst obstruction.
 - [ ] Produce summary metrics.
 - [ ] Add end-to-end tests with synthetic terrain.
+- [ ] Cross-check representative end-to-end profiles against Python.
 
 ## Phase 6 — Presentation and export
 
@@ -72,6 +83,7 @@ The roadmap is intentionally incremental. Each phase should leave the repository
 - [ ] Add missing-tile and NoData scenarios.
 - [ ] Benchmark terrain access.
 - [ ] Review numerical edge cases.
+- [ ] Automate selected Rust/Python differential cases.
 - [ ] Document reproducible validation examples.
 
 ## Future / explicitly out of v1
