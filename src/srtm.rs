@@ -158,9 +158,9 @@ impl SrtmProvider {
             let tile = SrtmTile::open(&self.directory, key)?;
             self.cache.insert(key, tile);
         }
-        self.cache
-            .get(&key)
-            .ok_or_else(|| Error::InvalidTile(format!("tile cache insertion failed: {}", key.filename())))
+        self.cache.get(&key).ok_or_else(|| {
+            Error::InvalidTile(format!("tile cache insertion failed: {}", key.filename()))
+        })
     }
 }
 
