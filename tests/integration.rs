@@ -160,7 +160,10 @@ fn link_analysis_reports_srtm_nodata_at_endpoint() {
 
     let path = directory.join(key.filename());
     let mut bytes = fs::read(&path).unwrap();
-    bytes[0..2].copy_from_slice(&(-32768i16).to_be_bytes());
+    let row = SRTM3_SAMPLES - 1;
+    let column = 0;
+    let offset = (row * SRTM3_SAMPLES + column) * 2;
+    bytes[offset..offset + 2].copy_from_slice(&(-32768i16).to_be_bytes());
     fs::write(&path, bytes).unwrap();
 
     let tx = AntennaPoint {
