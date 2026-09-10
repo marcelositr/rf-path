@@ -21,6 +21,7 @@ All notable project changes are recorded here.
 - Documented `--profile`, image outputs, and GeoJSON export in the README.
 - Documented the presentation/export font-independence constraint.
 - Closed Phase 6 and moved the roadmap focus to Phase 7 hardening.
+- Documented the first Phase 7 CLI-hardening increment and its CI validation.
 
 ### Implementation
 
@@ -43,6 +44,10 @@ All notable project changes are recorded here.
 - Wired `--output-image` into the CLI with explicit `.png`/`.svg` extension validation.
 - Wired `--export-geojson` into the CLI using the same `LinkAnalysis` instance as terminal and image outputs.
 - Removed the graphical renderer's dependency on host-installed fonts so PNG/SVG generation remains portable across headless environments.
+- Added early validation for CLI analysis controls (`--samples`, `--k-factor`, and `--fresnel-threshold`).
+- Added early `--srtm-dir` directory validation.
+- Added destination context to profile-image and GeoJSON write/export failures.
+- Added dedicated CLI tests for malformed analysis-control inputs.
 
 ### Validation
 
@@ -58,3 +63,5 @@ All notable project changes are recorded here.
 - Local validation on Rust 1.97.1 exposed a Plotters host-font failure in the PNG/SVG test; the renderer was changed to avoid text/font rendering entirely, preserving the profile curves while removing the environment dependency.
 - CI run #124 on `ed2de2c42c50a1d3177e8ac0b9a826fed0fc67bc` passed `cargo fmt --check`, `cargo test`, and Clippy, completing validation of the presentation/export path.
 - Local validation on `ed2de2c` independently passed `cargo fmt --check`, `cargo test` (21 unit tests plus 10 integration/differential tests), and `cargo clippy --all-targets --all-features -- -D warnings`.
+- CI run #129 exposed only a rustfmt 1.98.1 layout mismatch in the new CLI validation function; no test or lint stage was reached.
+- CI run #130 on `7037afcc127fe324ab41e73787407d34cfef855f` passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings` after the formatter correction.
