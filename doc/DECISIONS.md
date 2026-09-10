@@ -129,3 +129,45 @@ All renderers consume `LinkAnalysis` produced by the analysis layer.
 Every meaningful development session must leave `STATUS.md` accurate enough for the next agent to continue.
 
 **Reason:** This is the mechanism that replaces lost conversation context.
+
+## D015 — Python is a development-only reference implementation
+
+**Status:** Accepted
+
+Python will be used as an independent reference/laboratory implementation for validating important Rust calculations and controlled workflows.
+
+Python is not a runtime dependency of `rf-path` and is not part of the production architecture.
+
+**Reason:** Numerical/geospatial bugs can produce plausible output. A second, deliberately simple implementation provides an independent way to detect discrepancies between the specification and Rust implementation.
+
+## D016 — Rust remains the production implementation and authoritative test target
+
+**Status:** Accepted
+
+The production application and its normal regression suite remain Rust-based. Python reference code complements Rust tests; it does not replace them.
+
+**Reason:** The shipped product is Rust. Production behavior must be testable without Python, and users must not need Python installed to run `rf-path`.
+
+## D017 — Differential testing uses explicit numerical tolerances
+
+**Status:** Accepted / Provisional
+
+When comparing Python reference results with Rust results, comparisons use quantity-specific tolerances rather than bit-for-bit floating-point equality.
+
+**Reason:** Independent implementations can legitimately differ in floating-point rounding while representing the same physical result. Tolerances should reflect the numerical sensitivity of each quantity.
+
+## D018 — Python reference code prioritizes clarity over performance
+
+**Status:** Accepted
+
+Reference implementations should use straightforward, readable algorithms and small controlled inputs where possible. They are not performance targets.
+
+**Reason:** The purpose of the reference layer is to expose mathematical intent and discrepancies, not to duplicate Rust optimization work.
+
+## D019 — The specification remains above the Python reference
+
+**Status:** Accepted
+
+Neither Python nor Rust may silently redefine the project's behavior. The specification and accepted engineering decisions remain authoritative.
+
+**Reason:** Otherwise the two implementations could agree while both implement the wrong model.
