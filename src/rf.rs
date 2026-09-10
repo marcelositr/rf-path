@@ -11,10 +11,22 @@ pub fn wavelength_m(frequency_hz: f64) -> Result<f64> {
 }
 
 pub fn fresnel_radius_m(frequency_hz: f64, d1_m: f64, d2_m: f64) -> Result<f64> {
-    if !d1_m.is_finite() || !d2_m.is_finite() || d1_m < 0.0 || d2_m < 0.0 || d1_m + d2_m <= 0.0 {
+    if !d1_m.is_finite() || !d2_m.is_finite() || d1_m < 0.0 || d2_m < 0.0 {
         return Err(Error::InvalidInput("invalid Fresnel distances".into()));
     }
-    Ok((wavelength_m(frequency_hz)? * d1_m * d2_m / (d1_m + d2_m)).sqrt())
+    let total = d1_m + d2_m;
+    if !total.is_finite() || total <= 0.0 {
+        return Err(Error::InvalidInput("invalid Fresnel distances".into()));
+    }
+    let wavelength_m = wavelength_m(frequency_hz)?;
+    let smaller = d1_m.min(d2_m);
+    let larger = d1_m.max(d2_m);
+    let geometric_term = smaller / (1.0 + smaller / larger);
+    let value = wavelength_m * geometric_term;
+    if !value.is_finite() || value < 0.0 {
+        return Err(Error::InvalidInput("Fresnel radius is not finite".into()));
+    }
+    Ok(value.sqrt())
 }
 
 pub fn free_space_path_loss_db(distance_m: f64, frequency_hz: f64) -> Result<f64> {
@@ -50,6 +62,12 @@ mod tests {
     fn fresnel_rejects_non_finite_distances() {
         assert!(fresnel_radius_m(2.4e9, f64::NAN, 500.0).is_err());
         assert!(fresnel_radius_m(2.4e9, 500.0, f64::INFINITY).is_err());
+    }
+
+    #[test]
+    fn fresnel_handles_extreme_finite_distances_without_overflowing() {
+        let radius = fresnel_radius_m(2.4e9, f64::MAX / 2.0, f64::MAX / 2.0).unwrap();
+        assert!(radius.is_finite());
     }
 
     #[test]
