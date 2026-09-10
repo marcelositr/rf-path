@@ -48,6 +48,13 @@ pub fn great_circle_interpolate(a: GeoPoint, b: GeoPoint, fraction: f64) -> Resu
             "interpolation fraction must be in [0,1]".into(),
         ));
     }
+    if fraction == 0.0 {
+        return Ok(a);
+    }
+    if fraction == 1.0 {
+        return Ok(b);
+    }
+
     let (lat1, lon1) = a.radians();
     let (lat2, lon2) = b.radians();
     let v1 = [lat1.cos() * lon1.cos(), lat1.cos() * lon1.sin(), lat1.sin()];
