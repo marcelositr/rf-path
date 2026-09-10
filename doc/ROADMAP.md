@@ -79,8 +79,9 @@ Phase 4 was validated by green CI after the formatting correction. The model use
 - [ ] Validate the CLI execution path through green CI.
 - [x] Wire CLI arguments to `analyze_link`.
 - [x] Add first user-visible terminal summary.
+- [x] Diagnose and fix the formatter-only CI regression from #75–#79.
 
-The core analysis workflow and CLI wiring are now implemented. Phase 5 remains open for end-to-end Python differential validation and CLI validation.
+The core analysis workflow and CLI wiring are implemented. The remaining Phase 5 work is validation: confirm the post-fix CLI CI and perform the representative Rust/Python end-to-end comparison.
 
 ## Phase 6 — Presentation and export
 
