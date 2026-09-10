@@ -6,6 +6,7 @@ use clap::Parser;
 use rf_path::analysis::analyze_link;
 use rf_path::cli::{parse_antenna_point, Cli};
 use rf_path::error::{Error, Result};
+use rf_path::render::render_terminal_profile;
 use rf_path::srtm::SrtmProvider;
 use rf_path::units::parse_frequency_hz;
 
@@ -82,6 +83,10 @@ fn run() -> Result<()> {
             worst.position.lon_deg,
             worst.clearance_m,
         );
+    }
+
+    if cli.profile {
+        print!("{}", render_terminal_profile(&analysis));
     }
 
     Ok(())
