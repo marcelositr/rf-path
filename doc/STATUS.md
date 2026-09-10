@@ -60,10 +60,12 @@ PNG/SVG rendering and GeoJSON export remain separate presentation/export work. T
 - [x] Print first user-visible terminal analysis summary.
 - [x] Explicitly reject not-yet-wired image/GeoJSON output flags.
 - [x] Update README with the current CLI usage and capability status.
+- [x] Diagnose CI #75–#79 as the same `cargo fmt --check` failure in `src/main.rs`.
+- [x] Correct the formatter-only failure in `src/main.rs`.
 
 ## Current task
 
-Validate the newly wired CLI path through green CI, then complete the remaining Phase 5 validation with a representative end-to-end differential check against the Python reference.
+Re-run validation after the CLI formatting fix and close the CLI increment with green CI. Then complete the remaining Phase 5 validation with a representative end-to-end differential check against the Python reference.
 
 ## Known constraints
 
@@ -78,11 +80,11 @@ Validate the newly wired CLI path through green CI, then complete the remaining 
 
 ## Next recommended task
 
-Run and close the CLI integration validation through CI, then add a deterministic Rust/Python end-to-end profile comparison. After that, move into Phase 6 presentation/export, starting with the terminal profile/details and then PNG/SVG/GeoJSON.
+Verify the formatter fix through the next CI run. Once green, add a deterministic Rust/Python end-to-end profile comparison and only then move into Phase 6 presentation/export.
 
 ## Validation
 
-CI run #73 validated the complete `LinkAnalysis` workflow with formatting, tests, and Clippy. The CLI wiring is now in `src/main.rs` and `src/cli.rs`; the resulting validation is pending on the latest CLI commit.
+CI #73 validated the complete `LinkAnalysis` workflow with formatting, tests, and Clippy. CI #75–#79 all failed before `cargo test` and Clippy because `cargo fmt --check` found one formatting difference in `src/main.rs` around the minimum-clearance-ratio `println!`. The formatting was corrected in the current `main` commit; post-fix CI is pending.
 
 ## Continuity note
 
