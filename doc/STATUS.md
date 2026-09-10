@@ -8,9 +8,9 @@
 
 The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, integrated `LinkAnalysis` workflow, CLI execution path, Rust/Python differential regression, and presentation/export layers are implemented and validated. The CLI supports the detailed terminal profile, PNG/SVG profile charts, and GeoJSON export, all downstream of the same `LinkAnalysis` result.
 
-Phase 6 presentation/export work is now closed. PNG/SVG rendering is deliberately font-independent so graphical generation does not require an installed system font, while the labelled terminal profile remains the human-readable presentation.
+Phase 6 presentation/export work is closed. PNG/SVG rendering is deliberately font-independent so graphical generation does not require an installed system font, while the labelled terminal profile remains the human-readable presentation.
 
-The corrected presentation/export path has been validated both locally and through GitHub Actions on commit `ed2de2c42c50a1d3177e8ac0b9a826fed0fc67bc`: formatting, all tests, and Clippy passed.
+Phase 7 has started with CLI hardening: analysis controls are validated before terrain access, SRTM directory paths are checked early, output/export failures include their destination path, and malformed CLI-control inputs have dedicated tests.
 
 ## Completed
 
@@ -91,10 +91,13 @@ The corrected presentation/export path has been validated both locally and throu
 - [x] Diagnose the local PNG/SVG test failure caused by unavailable host fonts in Plotters.
 - [x] Make PNG/SVG rendering independent of installed system fonts while preserving the same analysis curves.
 - [x] Validate the complete presentation/export path through green CI on `ed2de2c`.
+- [x] Improve CLI diagnostics for invalid analysis controls, SRTM directory validation, and output/export failures.
+- [x] Add dedicated malformed-input tests for analysis controls while preserving existing antenna/frequency validation coverage.
+- [x] Validate the CLI-hardening increment through green CI (#130).
 
 ## Current task
 
-Begin Phase 7 hardening with CLI diagnostics and malformed-input coverage. Prioritize user-facing error clarity without changing the established numerical model or presentation/export data flow.
+Continue Phase 7 with missing-tile and NoData scenarios, then review numerical edge cases and reproducible CLI validation examples.
 
 ## Known constraints
 
@@ -107,14 +110,15 @@ Begin Phase 7 hardening with CLI diagnostics and malformed-input coverage. Prior
 - Rendering/export consumes `LinkAnalysis` and does not recalculate domain math.
 - `--output-image` currently accepts `.png` and `.svg`; other extensions are rejected explicitly.
 - PNG/SVG rendering intentionally does not require a system-installed font; the labelled terminal profile remains the human-readable presentation.
+- CLI failures return process exit code `2` and write the diagnostic to stderr.
 
 ## Next recommended task
 
-Improve CLI diagnostics and add malformed-input coverage, starting with invalid combinations of required options, unreadable SRTM paths, invalid sampling parameters, and clearly formatted user-facing errors.
+Add end-to-end coverage for a missing SRTM tile and a sampled NoData cell, asserting actionable diagnostics and preserving explicit failure rather than inventing terrain.
 
 ## Validation
 
-Local validation on Rust 1.97.1 at `ed2de2c` passed `cargo fmt --check`, `cargo test` (21 unit tests plus 10 integration/differential tests), and `cargo clippy --all-targets --all-features -- -D warnings`. GitHub Actions on the same commit also passed `cargo fmt --check`, `cargo test`, and Clippy.
+CI run #124 validated the complete presentation/export path with formatting, all tests, and Clippy green. Phase 7 CLI hardening initially exposed a rustfmt 1.98.1 formatting issue in CI #129; after the formatter correction, CI run #130 passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`.
 
 ## Continuity note
 
