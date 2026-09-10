@@ -10,7 +10,7 @@ The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance prim
 
 Phase 6 presentation/export work is closed. PNG/SVG rendering is deliberately font-independent so graphical generation does not require an installed system font, while the labelled terminal profile remains the human-readable presentation.
 
-Phase 7 has progressed through CLI hardening and terrain failure coverage: analysis controls are validated before terrain access, SRTM directory paths are checked early, output/export failures include their destination path, malformed CLI controls have dedicated tests, and end-to-end missing-tile/NoData scenarios verify explicit terrain failures. Numerical edge-case hardening is now implemented in the geometry, RF, and link-analysis layers and is awaiting the final CI validation pass.
+Phase 7 has progressed through CLI hardening, terrain failure coverage, numerical edge-case hardening, and reproducible validation examples. Analysis controls are validated before terrain access, SRTM directory paths are checked early, output/export failures include their destination path, malformed CLI controls have dedicated tests, end-to-end missing-tile/NoData scenarios verify explicit terrain failures, and the geometry/RF/link-analysis layers reject ambiguous or non-finite inputs without inventing values.
 
 ## Completed
 
@@ -103,10 +103,11 @@ Phase 7 has progressed through CLI hardening and terrain failure coverage: analy
 - [x] Reject antipodal great-circle interpolation where the shortest path is not unique.
 - [x] Validate `analyze_link` coordinates before terrain access and validate frequency before deriving wavelength.
 - [x] Add deterministic integration/unit coverage for these numerical edge cases.
+- [x] Add reproducible CLI validation examples and document the quality-gate commands in `doc/VALIDATION.md`.
 
 ## Current task
 
-Finish CI validation of the numerical edge-case hardening, then document reproducible CLI validation examples. Benchmark terrain access only after correctness-focused hardening is fully validated.
+Benchmark SRTM terrain access and record a reproducible performance baseline. After profiling, automate selected Rust/Python differential cases if they provide useful regression value.
 
 ## Known constraints
 
@@ -123,13 +124,13 @@ Finish CI validation of the numerical edge-case hardening, then document reprodu
 
 ## Next recommended task
 
-Complete the pending CI run for the numerical edge-case hardening. Once green, move to reproducible CLI validation examples and then terrain-access benchmarking.
+Benchmark SRTM terrain access across representative repeated and cross-tile sampling workloads, using deterministic synthetic HGT tiles and recording methodology plus results.
 
 ## Validation
 
-CI run #124 validated the complete presentation/export path with formatting, all tests, and Clippy green. CI run #130 validated the first Phase 7 CLI-hardening increment. CI run #137 on `b43bbd5` passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`, including the new missing-tile and `NoData` integration scenarios.
+CI run #124 validated the complete presentation/export path with formatting, all tests, and Clippy green. CI run #130 validated the first Phase 7 CLI-hardening increment. CI run #137 on `b43bbd5` passed the missing-tile and `NoData` integration scenarios. CI run #155 on `066252fe6779bf0690493491a7fa5ecab9048d82` passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`, validating the numerical edge-case hardening.
 
-CI runs #148 and #149 exposed rustfmt layout regressions while adding numerical edge-case coverage; both stopped before tests and linting. The current head is `0c63c709fa5529db84ab5fe54fb986c2653baea4`, with CI run #150 queued.
+The reproducible CLI validation examples are documented in `doc/VALIDATION.md` and do not require committed SRTM data for the negative-path checks.
 
 ## Continuity note
 
