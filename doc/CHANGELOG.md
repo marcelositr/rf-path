@@ -19,7 +19,8 @@ All notable project changes are recorded here.
 - Documented the deterministic end-to-end Python reference vector and regeneration command.
 - Closed Phase 5 and moved the roadmap focus to Phase 6 presentation/export.
 - Documented `--profile`, image outputs, and GeoJSON export in the README.
-- Documented the presentation/export font-independence constraint and validation follow-up.
+- Documented the presentation/export font-independence constraint.
+- Closed Phase 6 and moved the roadmap focus to Phase 7 hardening.
 
 ### Implementation
 
@@ -55,4 +56,5 @@ All notable project changes are recorded here.
 - CI run #107 validated the corrected terminal-profile path with formatting, tests, and Clippy green.
 - CI runs #116 and #118 exposed presentation/export `cargo fmt --check` regressions; those formatting issues were corrected for rustfmt 1.98.1.
 - Local validation on Rust 1.97.1 exposed a Plotters host-font failure in the PNG/SVG test; the renderer was changed to avoid text/font rendering entirely, preserving the profile curves while removing the environment dependency.
-- A fresh CI validation of the corrected presentation/export path is still pending.
+- CI run #124 on `ed2de2c42c50a1d3177e8ac0b9a826fed0fc67bc` passed `cargo fmt --check`, `cargo test`, and Clippy, completing validation of the presentation/export path.
+- Local validation on `ed2de2c` independently passed `cargo fmt --check`, `cargo test` (21 unit tests plus 10 integration/differential tests), and `cargo clippy --all-targets --all-features -- -D warnings`.
