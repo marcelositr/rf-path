@@ -246,7 +246,42 @@ Defaults:
 - k-factor: `4/3`;
 - Fresnel clearance threshold: `0.60`.
 
-## 14. Explicit limitations
+## 14. Development and validation model
+
+The production implementation is Rust. Python is an optional development-only reference implementation used to validate important calculations and controlled analysis cases.
+
+### 14.1 Role of Python
+
+Python should provide simple, explicit reference calculations for selected parts of the specification, including:
+
+- unit conversions;
+- great-circle geometry;
+- SRTM tile/index rules and controlled HGT fixtures;
+- Fresnel calculations;
+- effective-Earth/curvature calculations;
+- LOS and clearance;
+- FSPL;
+- selected end-to-end profiles.
+
+The Python reference is intentionally not optimized and must not become a runtime dependency.
+
+### 14.2 Rust/Python differential validation
+
+For representative deterministic inputs, Rust and Python may be executed independently and their structured results compared.
+
+Comparisons must use documented, quantity-specific tolerances. Floating-point results should not be required to match bit-for-bit.
+
+A discrepancy is a debugging signal, not proof that Rust is wrong. The specification and accepted decisions must first be checked to determine the intended behavior.
+
+### 14.3 Test promotion
+
+A useful development path is:
+
+`Python experiment → known-value/reference case → Rust test → differential regression case`
+
+Important cases discovered through Python should ultimately become permanent Rust tests when they describe production behavior.
+
+## 15. Explicit limitations
 
 SRTM represents terrain elevation and does not provide a complete surface model for buildings, trees, towers, or other local obstructions.
 
@@ -267,7 +302,7 @@ Version 1 does not claim to model:
 
 These are future capabilities and must be added explicitly rather than implied by the current result.
 
-## 15. Quality requirements
+## 16. Quality requirements
 
 Mathematical functions must be independently testable.
 
@@ -284,4 +319,7 @@ Tests should cover at least:
 - effective-Earth model behavior;
 - 60% classification boundaries;
 - multi-tile path lookup;
-- end-to-end analysis with controlled test terrain.
+- end-to-end analysis with controlled test terrain;
+- representative Rust/Python differential cases.
+
+The reference implementation must never become the sole test of a production requirement.
