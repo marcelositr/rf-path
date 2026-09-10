@@ -116,24 +116,18 @@ where
         .samples
         .iter()
         .map(|sample| (sample.distance_m / 1_000.0, sample.los_m));
-    let fresnel_upper = analysis
-        .samples
-        .iter()
-        .map(|sample| {
-            (
-                sample.distance_m / 1_000.0,
-                sample.los_m + sample.fresnel_radius_m,
-            )
-        });
-    let fresnel_lower = analysis
-        .samples
-        .iter()
-        .map(|sample| {
-            (
-                sample.distance_m / 1_000.0,
-                sample.los_m - sample.fresnel_radius_m,
-            )
-        });
+    let fresnel_upper = analysis.samples.iter().map(|sample| {
+        (
+            sample.distance_m / 1_000.0,
+            sample.los_m + sample.fresnel_radius_m,
+        )
+    });
+    let fresnel_lower = analysis.samples.iter().map(|sample| {
+        (
+            sample.distance_m / 1_000.0,
+            sample.los_m - sample.fresnel_radius_m,
+        )
+    });
 
     chart
         .draw_series(LineSeries::new(terrain, &BLACK))
