@@ -1,6 +1,6 @@
 # RF-Path — Roadmap
 
-The roadmap is intentionally incremental. Each phase should leave the repository buildable and testable.
+The roadmap is intentionally incremental. Each phase should leave the repository buildable and testable. `STATUS.md` records the current implementation state; this file records the planned progression and remaining work.
 
 ## Phase 0 — Documentation foundation
 
@@ -15,49 +15,51 @@ The roadmap is intentionally incremental. Each phase should leave the repository
 
 ## Phase 1 — Rust and validation foundation
 
-- [ ] Create `Cargo.toml`.
-- [ ] Establish Rust 2021 crate.
-- [ ] Add error handling conventions.
-- [ ] Add module skeleton.
-- [ ] Establish CI-quality formatting/lint/test baseline.
-- [ ] Create `tools/reference/` Python skeleton.
-- [ ] Add instructions for running reference calculations.
+- [x] Create `Cargo.toml`.
+- [x] Establish Rust 2021 crate.
+- [x] Add error handling conventions.
+- [x] Add module skeleton.
+- [x] Establish CI-quality formatting/lint/test baseline.
+- [x] Create `tools/reference/` Python skeleton.
+- [x] Add instructions for running reference calculations.
 
 ## Phase 2 — Geometry and units
 
-- [ ] Parse geographic endpoints.
-- [ ] Parse frequency units.
-- [ ] Implement SI unit conversions.
-- [ ] Implement great-circle distance.
-- [ ] Implement robust great-circle sampling.
-- [ ] Add deterministic Rust geometry tests.
-- [ ] Add corresponding Python reference calculations.
-- [ ] Compare representative Rust/Python results with documented tolerances.
+- [x] Parse geographic endpoints.
+- [x] Parse frequency units.
+- [x] Implement SI unit conversions.
+- [x] Implement great-circle distance.
+- [x] Implement robust great-circle sampling.
+- [x] Add deterministic Rust geometry tests.
+- [x] Add corresponding Python reference calculations.
+- [x] Compare representative Rust/Python results with documented tolerances.
 
 ## Phase 3 — SRTM terrain
 
-- [ ] Implement HGT tile naming.
-- [ ] Implement mmap-backed tile access.
-- [ ] Decode big-endian samples.
-- [ ] Correct north-to-south row orientation.
-- [ ] Implement bilinear interpolation.
-- [ ] Handle `NoData` explicitly.
-- [ ] Support multiple tiles along a path.
-- [ ] Add synthetic HGT fixtures/tests.
-- [ ] Add Python reference checks for tile/index/interpolation behavior.
-- [ ] Differential-test controlled SRTM cases.
+- [x] Implement HGT tile naming.
+- [x] Implement mmap-backed tile access.
+- [x] Decode big-endian samples.
+- [x] Correct north-to-south row orientation.
+- [x] Implement bilinear interpolation.
+- [x] Handle `NoData` explicitly.
+- [x] Support multiple tiles along a path.
+- [x] Add synthetic HGT fixtures/tests.
+- [x] Add Python reference checks for tile/index/interpolation behavior.
+- [ ] Add explicit Rust/Python differential vectors for controlled SRTM cases.
+- [ ] Strengthen boundary and malformed-fixture coverage.
+- [ ] Validate the complete SRTM test suite through green CI.
 
 ## Phase 4 — RF model
 
-- [ ] Implement wavelength.
-- [ ] Implement first Fresnel radius.
+- [x] Implement wavelength.
+- [x] Implement first Fresnel radius.
 - [ ] Implement effective Earth radius model.
 - [ ] Implement LOS/reference-path calculations.
 - [ ] Implement clearance and classification.
-- [ ] Implement FSPL.
-- [ ] Add known-value Rust tests.
-- [ ] Add independent Python reference calculations.
-- [ ] Differential-test numerical vectors with explicit tolerances.
+- [x] Implement FSPL.
+- [x] Add known-value Rust tests for implemented RF primitives.
+- [x] Add independent Python reference calculations for implemented RF primitives.
+- [ ] Differential-test the complete RF model with explicit tolerances.
 
 ## Phase 5 — Link analysis
 
