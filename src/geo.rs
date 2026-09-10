@@ -65,6 +65,11 @@ pub fn great_circle_interpolate(a: GeoPoint, b: GeoPoint, fraction: f64) -> Resu
     let v2 = [lat2.cos() * lon2.cos(), lat2.cos() * lon2.sin(), lat2.sin()];
     let dot = (v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2]).clamp(-1.0, 1.0);
     let angle = dot.acos();
+    if (PI - angle).abs() < 1e-12 {
+        return Err(Error::InvalidInput(
+            "great-circle interpolation is undefined for antipodal points".into(),
+        ));
+    }
     let (x, y, z) = if angle < 1e-12 {
         (v1[0], v1[1], v1[2])
     } else {
@@ -120,5 +125,20 @@ mod tests {
         let b = GeoPoint::new(-21.0, -48.0).unwrap();
         assert_eq!(great_circle_interpolate(a, b, 0.0).unwrap(), a);
         assert_eq!(great_circle_interpolate(a, b, 1.0).unwrap(), b);
+    }
+
+    #[test]
+    fn interpolation_rejects_antipodal_points() {
+        let a = GeoPoint::new(0.0, 0.0).unwrap();
+        let b = GeoPoint::new(0.0, 180.0).unwrap();
+        assert!(great_circle_interpolate(a, b, 0.5).is_err());
+    }
+
+    #[test]
+    fn interpolation_rejects_non_finite_fraction() {
+        let a = GeoPoint::new(0.0, 0.0).unwrap();
+        let b = GeoPoint::new(0.0, 1.0).unwrap();
+        assert!(great_circle_interpolate(a, b, f64::NAN).is_err());
+        assert!(great_circle_interpolate(a, b, f64::INFINITY).is_err());
     }
 }
