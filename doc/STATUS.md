@@ -6,7 +6,7 @@
 
 ## Current state
 
-The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, and integrated `LinkAnalysis` workflow are implemented and validated. The CLI now parses endpoint/frequency arguments, instantiates the local SRTM provider, runs `analyze_link`, and prints a concise auditable terminal summary.
+The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, integrated `LinkAnalysis` workflow, and CLI execution path are implemented. The project now also contains an independent Python-generated end-to-end reference vector covering a deterministic 21-sample flat-terrain profile; the Rust integration suite compares the complete summary and every profile sample against that vector with quantity-specific tolerances.
 
 PNG/SVG rendering and GeoJSON export remain separate presentation/export work. Their CLI flags are recognized but currently rejected with an explicit message rather than being silently ignored.
 
@@ -62,10 +62,13 @@ PNG/SVG rendering and GeoJSON export remain separate presentation/export work. T
 - [x] Update README with the current CLI usage and capability status.
 - [x] Diagnose CI #75–#79 as the same `cargo fmt --check` failure in `src/main.rs`.
 - [x] Correct the formatter-only failure in `src/main.rs`.
+- [x] Add an independent Python end-to-end `LinkAnalysis` reference generator.
+- [x] Add the generated 21-sample Rust/Python differential regression vector.
+- [x] Add Rust integration assertions for all reference summary and profile quantities.
 
 ## Current task
 
-Re-run validation after the CLI formatting fix and close the CLI increment with green CI. Then complete the remaining Phase 5 validation with a representative end-to-end differential check against the Python reference.
+Validate the new Rust/Python end-to-end differential test through green CI. Then close Phase 5 and move to Phase 6 presentation/export, starting with a terminal profile/details view before image and GeoJSON outputs.
 
 ## Known constraints
 
@@ -80,11 +83,11 @@ Re-run validation after the CLI formatting fix and close the CLI increment with 
 
 ## Next recommended task
 
-Verify the formatter fix through the next CI run. Once green, add a deterministic Rust/Python end-to-end profile comparison and only then move into Phase 6 presentation/export.
+Verify the current differential test through CI. Once green, mark the representative Rust/Python end-to-end comparison complete, close the remaining Phase 5 validation items, and begin the terminal profile/details renderer in `src/render.rs`.
 
 ## Validation
 
-CI #73 validated the complete `LinkAnalysis` workflow with formatting, tests, and Clippy. CI #75–#79 all failed before `cargo test` and Clippy because `cargo fmt --check` found one formatting difference in `src/main.rs` around the minimum-clearance-ratio `println!`. The formatting was corrected in the current `main` commit; post-fix CI is pending.
+CI #81 validated the CLI wiring with formatting, tests, and Clippy green. The current commits add a Python-generated end-to-end reference vector and a Rust integration comparison; post-change CI is pending.
 
 ## Continuity note
 
