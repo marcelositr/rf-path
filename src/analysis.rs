@@ -21,7 +21,7 @@ pub enum ClearanceStatus {
     LineOfSightBlocked,
 }
 
-/// One auditable point in a sampled RF path profile.
+/// One auditable point in the sampled RF path profile.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub struct ProfileSample {
     pub distance_m: f64,
@@ -75,7 +75,9 @@ pub fn effective_earth_radius_m(k_factor: f64) -> Result<f64> {
     }
     let radius = k_factor * EARTH_RADIUS_M;
     if !radius.is_finite() || radius <= 0.0 {
-        return Err(Error::InvalidInput("effective Earth radius is not finite".into()));
+        return Err(Error::InvalidInput(
+            "effective Earth radius is not finite".into(),
+        ));
     }
     Ok(radius)
 }
@@ -92,7 +94,9 @@ pub fn earth_bulge_m(d1_m: f64, d2_m: f64, k_factor: f64) -> Result<f64> {
     let radius = effective_earth_radius_m(k_factor)?;
     let bulge = d1_m * d2_m / (2.0 * radius);
     if !bulge.is_finite() {
-        return Err(Error::InvalidInput("Earth-curvature bulge is not finite".into()));
+        return Err(Error::InvalidInput(
+            "Earth-curvature bulge is not finite".into(),
+        ));
     }
     Ok(bulge)
 }
