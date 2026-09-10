@@ -1,7 +1,9 @@
 //! Link-path analysis orchestration and structured results.
 
 use crate::error::{Error, Result};
-use crate::geo::{great_circle_distance_m, sample_great_circle, AntennaPoint, GeoPoint, EARTH_RADIUS_M};
+use crate::geo::{
+    great_circle_distance_m, sample_great_circle, AntennaPoint, GeoPoint, EARTH_RADIUS_M,
+};
 use crate::rf::{free_space_path_loss_db, fresnel_radius_m};
 use crate::srtm::TerrainProvider;
 use crate::units::SPEED_OF_LIGHT_M_S;
@@ -117,8 +119,10 @@ pub fn effective_reference_path_elevation_m(
     d2_m: f64,
     k_factor: f64,
 ) -> Result<f64> {
-    Ok(reference_path_elevation_m(tx_altitude_m, rx_altitude_m, d1_m, d2_m)?
-        - earth_bulge_m(d1_m, d2_m, k_factor)?)
+    Ok(
+        reference_path_elevation_m(tx_altitude_m, rx_altitude_m, d1_m, d2_m)?
+            - earth_bulge_m(d1_m, d2_m, k_factor)?,
+    )
 }
 
 /// Returns terrain clearance relative to the effective reference path.
@@ -135,13 +139,10 @@ pub fn terrain_clearance_m(
             "terrain altitude must be finite".into(),
         ));
     }
-    Ok(effective_reference_path_elevation_m(
-        tx_altitude_m,
-        rx_altitude_m,
-        d1_m,
-        d2_m,
-        k_factor,
-    )? - terrain_m)
+    Ok(
+        effective_reference_path_elevation_m(tx_altitude_m, rx_altitude_m, d1_m, d2_m, k_factor)?
+            - terrain_m,
+    )
 }
 
 /// Classifies clearance using the requested fraction of the first Fresnel zone.
@@ -216,7 +217,9 @@ pub fn analyze_link<T: TerrainProvider>(
 
     let distance_m = great_circle_distance_m(tx.position, rx.position);
     if distance_m <= 0.0 {
-        return Err(Error::InvalidInput("TX and RX must be different points".into()));
+        return Err(Error::InvalidInput(
+            "TX and RX must be different points".into(),
+        ));
     }
     let wavelength_m = SPEED_OF_LIGHT_M_S / frequency_hz;
     if !frequency_hz.is_finite() || frequency_hz <= 0.0 {
