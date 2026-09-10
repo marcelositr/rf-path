@@ -19,6 +19,7 @@ All notable project changes are recorded here.
 - Documented the deterministic end-to-end Python reference vector and regeneration command.
 - Closed Phase 5 and moved the roadmap focus to Phase 6 presentation/export.
 - Documented `--profile`, image outputs, and GeoJSON export in the README.
+- Documented the presentation/export font-independence constraint and validation follow-up.
 
 ### Implementation
 
@@ -40,6 +41,7 @@ All notable project changes are recorded here.
 - Added GeoJSON parsing/export coverage.
 - Wired `--output-image` into the CLI with explicit `.png`/`.svg` extension validation.
 - Wired `--export-geojson` into the CLI using the same `LinkAnalysis` instance as terminal and image outputs.
+- Removed the graphical renderer's dependency on host-installed fonts so PNG/SVG generation remains portable across headless environments.
 
 ### Validation
 
@@ -51,4 +53,6 @@ All notable project changes are recorded here.
 - CI runs #100–#105 exposed repeated formatter-only failures during terminal-profile/differential-test integration; the root cause was the differential-test import layout under current rustfmt 1.98.1.
 - CI run #106 reached `cargo test` after formatting was fixed and exposed a stale terminal-profile test line-count assertion; the test was corrected.
 - CI run #107 validated the corrected terminal-profile path with formatting, tests, and Clippy green.
-- The new presentation/export implementation now awaits a fresh CI validation cycle.
+- CI runs #116 and #118 exposed presentation/export `cargo fmt --check` regressions; those formatting issues were corrected for rustfmt 1.98.1.
+- Local validation on Rust 1.97.1 exposed a Plotters host-font failure in the PNG/SVG test; the renderer was changed to avoid text/font rendering entirely, preserving the profile curves while removing the environment dependency.
+- A fresh CI validation of the corrected presentation/export path is still pending.
