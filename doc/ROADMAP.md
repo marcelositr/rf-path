@@ -49,7 +49,7 @@ The roadmap is intentionally incremental. Each phase should leave the repository
 - [x] Strengthen boundary and malformed-fixture coverage.
 - [x] Validate the complete SRTM test suite through green CI.
 
-Phase 3 was closed by CI run #52, which passed formatting, all tests, and Clippy.
+Phase 3 was closed by CI run #52.
 
 ## Phase 4 — RF model
 
@@ -63,7 +63,7 @@ Phase 3 was closed by CI run #52, which passed formatting, all tests, and Clippy
 - [x] Add independent Python reference calculations for implemented RF primitives.
 - [x] Differential-test the effective-Earth and clearance model with explicit tolerances.
 
-Phase 4 was validated by green CI after the formatting correction. The model uses configurable `k` with default `4/3`, a parabolic curvature approximation, linear endpoint reference altitude, and the 60% first-Fresnel classification.
+Phase 4 was validated by green CI.
 
 ## Phase 5 — Link analysis
 
@@ -77,47 +77,45 @@ Phase 4 was validated by green CI after the formatting correction. The model use
 - [x] Validate the complete `LinkAnalysis` workflow through green CI (#73).
 - [x] Wire CLI arguments to `analyze_link`.
 - [x] Add first user-visible terminal summary.
-- [x] Diagnose and fix the formatter-only CI regression from #75–#79.
 - [x] Add independent Python-generated end-to-end reference profile.
-- [x] Add Rust differential regression test for the complete 21-sample profile.
+- [x] Add Rust differential regression for the complete 21-sample profile.
 - [x] Validate the Rust/Python differential regression through green CI (#94).
 
-Phase 5 is closed. The production analysis workflow, CLI wiring, and representative end-to-end Rust/Python differential validation are all implemented and validated.
+Phase 5 is closed.
 
 ## Phase 6 — Presentation and export
 
-- [x] Implement terminal profile/details beyond the summary.
-- [x] Diagnose and correct CI #102–#105 formatter-only regressions in the differential-test import layout.
-- [x] Diagnose and correct CI #106 terminal-profile test failure caused by a stale line-count assertion.
-- [x] Validate the corrected terminal profile path through green CI (#107).
-- [x] Document `--profile` usage in the README.
+- [x] Implement terminal profile/details.
+- [x] Add `--profile` CLI flag.
 - [x] Implement PNG profile rendering.
 - [x] Implement SVG profile rendering.
 - [x] Implement GeoJSON export.
 - [x] Ensure terminal, image, and GeoJSON outputs consume `LinkAnalysis` data only.
-- [x] Diagnose and correct presentation/export `cargo fmt` regressions in CI #116/#118.
 - [x] Make PNG/SVG rendering independent of installed system fonts.
 - [x] Validate the complete presentation/export path through green CI on `ed2de2c`.
 
-Phase 6 is closed. Presentation and export are implemented, consume the established `LinkAnalysis` result, and pass local and GitHub Actions formatting, test, and Clippy validation.
+Phase 6 is closed.
 
 ## Phase 7 — Hardening
 
 - [x] Improve CLI diagnostics.
 - [x] Add malformed-input tests.
 - [x] Add missing-tile and NoData scenarios.
-- [ ] Benchmark terrain access.
 - [x] Review numerical edge cases.
-- [ ] Automate selected Rust/Python differential cases.
 - [x] Document reproducible validation examples.
+- [x] Add reproducible SRTM access benchmark harness.
+- [x] Record a local SRTM benchmark baseline.
+- [ ] Automate selected Rust/Python differential cases.
 
-The first Phase 7 increment validates analysis controls before terrain access, checks the SRTM directory before analysis, adds destination context to output/export failures, and covers malformed analysis-control inputs. CI run #130 passed formatting, tests, and Clippy after the rustfmt-only correction from #129.
+The first Phase 7 increment validated analysis controls before terrain access, checked the SRTM directory early, added destination context to output/export failures, and covered malformed analysis-control inputs. CI #130 passed formatting, tests, and Clippy.
 
-The second Phase 7 increment adds end-to-end coverage for missing SRTM tiles and endpoint `NoData`. The tests verify that terrain access failures remain explicit and that the analysis does not invent replacement elevation data. CI run #137 passed formatting, tests, and Clippy after correcting the synthetic HGT fixture to target the actual south-edge sample cell.
+The second increment added end-to-end missing-tile and endpoint `NoData` coverage. CI #137 passed formatting, tests, and Clippy after correcting the synthetic HGT fixture to target the actual south-edge sample cell.
 
-The numerical edge-case increment hardens non-finite RF distances, overflow-safe Fresnel arithmetic, effective Earth-radius/bulge validation, antipodal great-circle interpolation, direct-coordinate validation in `analyze_link`, and early frequency validation. Deterministic unit/integration tests cover these cases, and CI run #155 passed formatting, all tests, and Clippy on the resulting head.
+The numerical increment hardened non-finite Fresnel inputs, overflow-safe Fresnel arithmetic, effective Earth-radius/bulge validation, antipodal interpolation, direct-coordinate validation, and early frequency validation. CI #155 passed formatting, all tests, and Clippy.
 
-The reproducible-validation increment adds `doc/VALIDATION.md` with automated Rust quality gates, deterministic CLI failure cases, a complete local-SRTM CLI example, and the project exit-code convention.
+The reproducible-validation increment added `doc/VALIDATION.md` with Rust quality gates, deterministic CLI failure cases, a complete local-SRTM CLI example, and the exit-code convention.
+
+The benchmark increment added `benches/srtm_access.rs` and documented methodology. A local run on 2026-09-10 measured 96.2 ns/query for 100,000 repeated queries in one cached tile and 101.9 ns/query for 100,000 queries alternating between two cached tiles. These timings are a machine-local baseline, not a CI threshold.
 
 ## Future / explicitly out of v1
 
