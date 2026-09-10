@@ -41,6 +41,10 @@ pub struct Cli {
     #[arg(long, default_value_t = 0.60)]
     pub fresnel_threshold: f64,
 
+    /// Print the complete sampled path profile after the summary.
+    #[arg(long)]
+    pub profile: bool,
+
     /// Output profile image path.
     #[arg(long)]
     pub output_image: Option<String>,
@@ -77,6 +81,12 @@ pub fn parse_antenna_point(input: &str, label: &str) -> Result<AntennaPoint> {
         )));
     }
 
+    if !height.is_finite() || height < 0.0 {
+        return Err(Error::InvalidInput(format!(
+            "{label} antenna height must be finite and non-negative"
+        )));
+    }
+
     Ok(AntennaPoint {
         position: GeoPoint::new(lat, lon)?,
         antenna_height_m: height,
@@ -103,5 +113,10 @@ mod tests {
     #[test]
     fn rejects_invalid_coordinates() {
         assert!(parse_antenna_point("91,0,10", "TX").is_err());
+    }
+
+    #[test]
+    fn rejects_negative_height() {
+        assert!(parse_antenna_point("0,0,-1", "TX").is_err());
     }
 }
