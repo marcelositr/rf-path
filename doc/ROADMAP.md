@@ -89,12 +89,13 @@ Phase 5 is closed. The production analysis workflow, CLI wiring, and representat
 - [x] Implement terminal profile/details beyond the summary.
 - [x] Diagnose and correct CI #102–#105 formatter-only regressions in the differential-test import layout.
 - [x] Diagnose and correct CI #106 terminal-profile test failure caused by a stale line-count assertion.
-- [ ] Validate the corrected terminal profile CLI path through green CI.
-- [ ] Document `--profile` usage in the README.
-- [ ] Implement PNG profile.
-- [ ] Implement SVG profile.
-- [ ] Implement GeoJSON export.
-- [ ] Ensure outputs consume analysis data only.
+- [x] Validate the corrected terminal profile path through green CI (#107).
+- [x] Document `--profile` usage in the README.
+- [x] Implement PNG profile rendering.
+- [x] Implement SVG profile rendering.
+- [x] Implement GeoJSON export.
+- [x] Ensure terminal, image, and GeoJSON outputs consume `LinkAnalysis` data only.
+- [ ] Validate the complete presentation/export CLI path through green CI.
 
 ## Phase 7 — Hardening
 
