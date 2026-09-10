@@ -86,7 +86,9 @@ Phase 5 is closed. The production analysis workflow, CLI wiring, and representat
 
 ## Phase 6 — Presentation and export
 
-- [ ] Implement terminal profile/details beyond the summary.
+- [x] Implement terminal profile/details beyond the summary.
+- [ ] Validate the terminal profile CLI path through green CI.
+- [ ] Document `--profile` usage in the README.
 - [ ] Implement PNG profile.
 - [ ] Implement SVG profile.
 - [ ] Implement GeoJSON export.
