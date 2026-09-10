@@ -6,9 +6,9 @@
 
 ## Current state
 
-The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, integrated `LinkAnalysis` workflow, CLI execution path, and representative Rust/Python end-to-end differential regression are implemented and validated. CI #94 is green with formatting, tests, and Clippy passing.
+The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, integrated `LinkAnalysis` workflow, CLI execution path, and representative Rust/Python end-to-end differential regression are implemented and validated. The CLI now also supports an opt-in detailed terminal profile table rendered directly from `LinkAnalysis`.
 
-PNG/SVG rendering and GeoJSON export remain separate presentation/export work. Their CLI flags are recognized but currently rejected with an explicit message rather than being silently ignored.
+PNG/SVG rendering and GeoJSON export remain separate presentation/export work. Their existing output flags are recognized but currently rejected with an explicit message rather than being silently ignored.
 
 ## Completed
 
@@ -68,10 +68,13 @@ PNG/SVG rendering and GeoJSON export remain separate presentation/export work. T
 - [x] Diagnose CI #90–#93 as formatter-only failures during differential-test integration.
 - [x] Correct the differential-test formatting without removing its coverage.
 - [x] Validate the corrected differential regression through green CI (#94).
+- [x] Implement `render_terminal_profile` from `LinkAnalysis`.
+- [x] Add the `--profile` CLI flag.
+- [x] Add deterministic terminal-profile rendering tests and explicit status labels.
 
 ## Current task
 
-Close Phase 5 formally in the documentation and begin Phase 6 with the terminal profile/details renderer in `src/render.rs`. The renderer must consume `LinkAnalysis` only and must not recalculate RF or terrain math.
+Validate the new terminal profile path through green CI. Then continue Phase 6 with PNG/SVG rendering and GeoJSON export, keeping all presentation layers downstream of `LinkAnalysis`.
 
 ## Known constraints
 
@@ -86,11 +89,11 @@ Close Phase 5 formally in the documentation and begin Phase 6 with the terminal 
 
 ## Next recommended task
 
-Implement the terminal profile/details renderer in `src/render.rs`, add deterministic renderer tests, wire it into the CLI, and keep PNG/SVG/GeoJSON as subsequent Phase 6 increments.
+Verify the terminal profile implementation through the current CI run. Once green, document the `--profile` usage and begin PNG/SVG rendering from the same `LinkAnalysis` sample data.
 
 ## Validation
 
-CI #94 is green with `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings` all successful. The run validates the current Rust/Python end-to-end differential regression as part of the full Rust test suite.
+CI #94 validated the Rust/Python end-to-end differential regression with formatting, tests, and Clippy green. CI #100 and #101 were formatter-only regressions during integration; those issues are corrected. CI #102 is the current validation run for the corrected differential formatting plus the terminal-profile changes.
 
 ## Continuity note
 
