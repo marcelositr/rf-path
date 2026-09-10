@@ -87,7 +87,9 @@ Phase 5 is closed. The production analysis workflow, CLI wiring, and representat
 ## Phase 6 — Presentation and export
 
 - [x] Implement terminal profile/details beyond the summary.
-- [ ] Validate the terminal profile CLI path through green CI.
+- [x] Diagnose and correct CI #102–#105 formatter-only regressions in the differential-test import layout.
+- [x] Diagnose and correct CI #106 terminal-profile test failure caused by a stale line-count assertion.
+- [ ] Validate the corrected terminal profile CLI path through green CI.
 - [ ] Document `--profile` usage in the README.
 - [ ] Implement PNG profile.
 - [ ] Implement SVG profile.
