@@ -6,9 +6,9 @@
 
 ## Current state
 
-The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, integrated `LinkAnalysis` workflow, CLI execution path, and representative Rust/Python end-to-end differential regression are implemented and validated. The CLI now also supports an opt-in detailed terminal profile table rendered directly from `LinkAnalysis`.
+The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, integrated `LinkAnalysis` workflow, CLI execution path, Rust/Python differential regression, and presentation/export layers are implemented. The CLI supports the detailed terminal profile, PNG/SVG profile charts, and GeoJSON export, all downstream of the same `LinkAnalysis` result.
 
-PNG/SVG rendering and GeoJSON export remain separate presentation/export work. Their existing output flags are recognized but currently rejected with an explicit message rather than being silently ignored.
+The remaining Phase 6 work is CI validation of the complete presentation/export path. After that, development moves to Phase 7 hardening.
 
 ## Completed
 
@@ -58,7 +58,6 @@ PNG/SVG rendering and GeoJSON export remain separate presentation/export work. T
 - [x] Parse CLI `lat,lon,height_m` antenna arguments with validation tests.
 - [x] Wire CLI execution into `analyze_link` and `SrtmProvider`.
 - [x] Print first user-visible terminal analysis summary.
-- [x] Explicitly reject not-yet-wired image/GeoJSON output flags.
 - [x] Update README with the current CLI usage and capability status.
 - [x] Diagnose CI #75–#79 as the same `cargo fmt --check` failure in `src/main.rs`.
 - [x] Correct the formatter-only failure in `src/main.rs`.
@@ -72,13 +71,23 @@ PNG/SVG rendering and GeoJSON export remain separate presentation/export work. T
 - [x] Add the `--profile` CLI flag.
 - [x] Add deterministic terminal-profile rendering tests and explicit status labels.
 - [x] Diagnose CI #102–#105 as repeated formatter-only failures caused by the differential-test import layout under current rustfmt 1.98.1.
-- [x] Correct `tests/differential.rs` to the formatter-required one-line import layout.
+- [x] Correct `tests/differential.rs` to the formatter-required import layout.
 - [x] Diagnose CI #106 as the first non-formatting failure in the terminal-profile test: the expected line count was stale after the renderer added its table separator/header structure.
 - [x] Correct the terminal-profile test expectation and remove now-unused test imports.
+- [x] Validate the corrected terminal-profile path through green CI (#107).
+- [x] Document `--profile` usage in the README.
+- [x] Implement PNG profile rendering from `LinkAnalysis` samples.
+- [x] Implement SVG profile rendering from `LinkAnalysis` samples.
+- [x] Add PNG/SVG rendering tests that verify non-empty output files.
+- [x] Implement GeoJSON `FeatureCollection` export with path and per-sample features.
+- [x] Add GeoJSON parsing/export coverage.
+- [x] Wire `--output-image` with `.png`/`.svg` extension validation.
+- [x] Wire `--export-geojson` into the same analysed result.
+- [x] Keep terminal, image, and GeoJSON presentation layers downstream of `LinkAnalysis`.
 
 ## Current task
 
-Validate the corrected terminal-profile path through green CI. Then document `--profile` usage in the README and continue Phase 6 with PNG/SVG rendering and GeoJSON export, keeping all presentation layers downstream of `LinkAnalysis`.
+Run and validate the complete presentation/export path through CI. The next Phase 7 increment should focus on CLI diagnostics, malformed inputs, missing tiles/NoData scenarios, numerical edge cases, and reproducible validation examples.
 
 ## Known constraints
 
@@ -87,17 +96,17 @@ Validate the corrected terminal-profile path through green CI. Then document `--
 - SRTM data will be supplied locally and must not be committed to the repository.
 - No real SRTM fixtures are present yet.
 - The CLI requires a local SRTM directory containing every tile needed by the sampled path.
-- PNG/SVG and GeoJSON output flags are present but intentionally not implemented yet.
 - The effective-Earth model uses the agreed parabolic approximation; a more exact propagation model is future work.
-- Rendering/export must continue consuming `LinkAnalysis` rather than recalculating domain math.
+- Rendering/export consumes `LinkAnalysis` and does not recalculate domain math.
+- `--output-image` currently accepts `.png` and `.svg`; other extensions are rejected explicitly.
 
 ## Next recommended task
 
-Wait for the current CI validation of the corrected terminal-profile test to complete. Once green, document the `--profile` usage and begin PNG/SVG rendering from the same `LinkAnalysis` sample data.
+Validate the new image/GeoJSON code locally and through GitHub Actions. If green, begin Phase 7 with CLI diagnostics and malformed-input coverage.
 
 ## Validation
 
-CI #94 validated the Rust/Python end-to-end differential regression with formatting, tests, and Clippy green. CI #100–#105 exposed repeated formatter-only failures during terminal-profile/differential-test integration; the differential import is now in the exact layout expected by rustfmt 1.98.1. CI #106 reached `cargo test` and exposed a stale renderer test line-count assertion; that test is now corrected. The current CI run #107 validates the corrected state.
+The repository's last explicitly verified green CI state before the presentation/export implementation was CI #107, which passed formatting, tests, and Clippy after the terminal-profile test correction. The current image/export changes need a new CI validation cycle.
 
 ## Continuity note
 
