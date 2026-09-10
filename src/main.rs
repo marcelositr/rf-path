@@ -1,5 +1,8 @@
 //! RF-Path application entry point.
 
+use clap::Parser;
+use rf_path::cli::Cli;
+
 fn main() {
-    println!("rf-path: implementation in progress");
+    let _cli = Cli::parse();
 }
