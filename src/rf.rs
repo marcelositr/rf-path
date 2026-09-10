@@ -24,7 +24,10 @@ pub fn free_space_path_loss_db(distance_m: f64, frequency_hz: f64) -> Result<f64
     if !frequency_hz.is_finite() || frequency_hz <= 0.0 {
         return Err(Error::InvalidInput("frequency must be positive".into()));
     }
-    Ok(20.0 * (4.0 * std::f64::consts::PI * distance_m * frequency_hz / SPEED_OF_LIGHT_M_S).log10())
+    Ok(
+        20.0 * (4.0 * std::f64::consts::PI * distance_m * frequency_hz / SPEED_OF_LIGHT_M_S)
+            .log10(),
+    )
 }
 
 #[cfg(test)]
