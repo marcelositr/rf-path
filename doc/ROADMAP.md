@@ -101,11 +101,10 @@ Phase 6 is closed.
 - [x] Improve CLI diagnostics.
 - [x] Add malformed-input tests.
 - [x] Add missing-tile and NoData scenarios.
+- [x] Benchmark terrain access.
 - [x] Review numerical edge cases.
+- [x] Automate selected Rust/Python differential cases.
 - [x] Document reproducible validation examples.
-- [x] Add reproducible SRTM access benchmark harness.
-- [x] Record a local SRTM benchmark baseline.
-- [ ] Automate selected Rust/Python differential cases.
 
 The first Phase 7 increment validated analysis controls before terrain access, checked the SRTM directory early, added destination context to output/export failures, and covered malformed analysis-control inputs. CI #130 passed formatting, tests, and Clippy.
 
@@ -115,7 +114,9 @@ The numerical increment hardened non-finite Fresnel inputs, overflow-safe Fresne
 
 The reproducible-validation increment added `doc/VALIDATION.md` with Rust quality gates, deterministic CLI failure cases, a complete local-SRTM CLI example, and the exit-code convention.
 
-The benchmark increment added `benches/srtm_access.rs` and documented methodology. A local run on 2026-09-10 measured 96.2 ns/query for 100,000 repeated queries in one cached tile and 101.9 ns/query for 100,000 queries alternating between two cached tiles. These timings are a machine-local baseline, not a CI threshold.
+The benchmark increment added `benches/srtm_access.rs` and a manual machine-local baseline. A 2026-09-10 run measured 96.2 ns/query for 100,000 repeated queries in one cached tile and 101.9 ns/query for 100,000 queries alternating between two cached tiles.
+
+The differential increment extends the committed end-to-end reference coverage with deterministic `FresnelPartial` and `LineOfSightBlocked` summary vectors. The vectors remain fixed test data so CI does not need to execute Python or regenerate floating-point data.
 
 ## Future / explicitly out of v1
 
