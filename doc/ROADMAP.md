@@ -49,7 +49,7 @@ The roadmap is intentionally incremental. Each phase should leave the repository
 - [x] Strengthen boundary and malformed-fixture coverage.
 - [x] Validate the complete SRTM test suite through green CI.
 
-Phase 3 was closed by CI run #52, which passed formatting, all tests (including 8 SRTM integration tests), and Clippy.
+Phase 3 was closed by CI run #52, which passed formatting, all tests, and Clippy.
 
 ## Phase 4 — RF model
 
@@ -63,18 +63,21 @@ Phase 3 was closed by CI run #52, which passed formatting, all tests (including 
 - [x] Add independent Python reference calculations for implemented RF primitives.
 - [x] Differential-test the effective-Earth and clearance model with explicit tolerances.
 
-The RF model uses configurable `k` with default `4/3`, the parabolic bulge approximation, linear endpoint reference altitude, and the 60% first-Fresnel classification. The implementation is ready for integration into `LinkAnalysis`; CI is the remaining validation gate for this increment.
+Phase 4 was validated by green CI after the formatting correction. The model uses configurable `k` with default `4/3`, a parabolic curvature approximation, linear endpoint reference altitude, and the 60% first-Fresnel classification.
 
 ## Phase 5 — Link analysis
 
-- [ ] Combine geometry, terrain, and RF models.
-- [ ] Produce auditable profile samples.
-- [ ] Identify worst obstruction.
-- [ ] Produce summary metrics.
-- [ ] Add end-to-end tests with synthetic terrain.
+- [x] Define `ProfileSample`, `Obstacle`, and `LinkAnalysis` result models.
+- [x] Combine great-circle geometry with `TerrainProvider` sampling.
+- [x] Calculate endpoint ground elevation and absolute antenna altitude.
+- [x] Produce auditable per-sample terrain/LOS/curvature/Fresnel/clearance data.
+- [x] Identify the minimum-clearance worst point.
+- [x] Produce summary blocking metrics.
+- [x] Add end-to-end clear/obstructed synthetic-terrain tests.
+- [ ] Validate the complete `LinkAnalysis` workflow through green CI.
 - [ ] Cross-check representative end-to-end profiles against Python.
 
-**Current focus after RF validation:** build `LinkAnalysis` around great-circle sampling and `TerrainProvider`, with no RF recalculation in rendering/export layers.
+**Current focus:** validate the integrated analysis through CI, then wire the CLI to `analyze_link` and expose the first user-visible summary.
 
 ## Phase 6 — Presentation and export
 
