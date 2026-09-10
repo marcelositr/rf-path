@@ -2,46 +2,40 @@
 
 ## Current phase
 
-**Phase 1 — Rust and validation foundation**
+**Phase 2 — Geometry and units**
 
 ## Current state
 
-The repository now has the planned initial project tree: Rust crate structure, integration-test structure, development-only Python reference tooling, test-fixture documentation, and baseline GitHub CI.
+The Rust crate foundation is in place and the first production numerical primitives have been implemented. Frequency parsing, SI constants, spherical great-circle distance, robust great-circle interpolation/sampling, wavelength, first Fresnel radius, and FSPL are now represented in Rust with deterministic unit tests.
 
-The production application remains Rust. Python is a development-only laboratory/reference implementation used to independently validate numerical and geospatial behavior.
+The development-only Python reference layer contains corresponding readable geometry and RF calculations. It remains independent from the Rust runtime.
 
 ## Completed
 
-- [x] Define repository documentation as persistent project context.
-- [x] Define AI-agent onboarding and continuity rules.
-- [x] Define the initial technical specification.
-- [x] Define module boundaries and data flow.
-- [x] Record the initial engineering/math decisions.
-- [x] Define Rust unit/integration testing strategy.
-- [x] Decide to use Python as a development-only reference implementation.
-- [x] Define Rust/Python differential validation with explicit tolerances.
-- [x] Document Python's role and boundaries in architecture, decisions, testing, and developer workflow.
-- [x] Create `Cargo.toml`.
-- [x] Create the initial Rust source/module tree.
-- [x] Create the Rust integration-test tree.
+- [x] Establish persistent repository documentation and AI-agent continuity rules.
+- [x] Define specification, architecture, decisions, roadmap, testing, and developer workflow.
+- [x] Create `Cargo.toml` and Rust 2021 crate foundation.
+- [x] Create Rust source/module tree.
+- [x] Create Rust integration-test tree and fixture documentation.
 - [x] Create `tools/reference/` Python tooling skeleton.
-- [x] Add deterministic test-fixture documentation.
 - [x] Add baseline GitHub Actions Rust CI.
-- [ ] Implement CLI parsing.
-- [ ] Implement units.
-- [ ] Implement geographic primitives and great-circle sampling.
-- [ ] Implement SRTM HGT reader.
-- [ ] Implement RF calculations.
-- [ ] Implement link analysis orchestration.
-- [ ] Implement terminal output.
-- [ ] Implement PNG/SVG rendering.
-- [ ] Implement GeoJSON export.
-- [ ] Add complete test suite.
-- [ ] Implement automated Rust/Python differential test harness.
+- [x] Define CLI structure and defaults.
+- [x] Implement frequency parsing into Hz.
+- [x] Implement SI speed-of-light constant.
+- [x] Implement geographic point validation.
+- [x] Implement great-circle distance.
+- [x] Implement robust great-circle interpolation and sampling.
+- [x] Add deterministic Rust tests for units and geometry.
+- [x] Implement Python reference geometry calculations.
+- [x] Implement Python reference RF calculations.
+- [x] Implement Python SRTM tile-name/index skeleton.
+- [x] Implement Python differential-comparison helper.
+- [x] Implement Rust wavelength, first Fresnel radius, and FSPL.
+- [x] Add deterministic Rust tests for the initial RF formulas.
 
 ## Current task
 
-Start the first real implementation increment: units and geographic primitives, with deterministic Rust tests and matching simple Python reference calculations.
+Continue Phase 2 by strengthening the geometry/units test vectors and performing explicit Rust/Python differential checks before moving to SRTM.
 
 ## Known constraints
 
@@ -49,15 +43,15 @@ Start the first real implementation increment: units and geographic primitives, 
 - Python reference tooling is development-only and must not become a runtime dependency.
 - SRTM data will be supplied locally and must not be committed to the repository.
 - No real SRTM fixtures are present yet.
-- The initial source modules are scaffolds; domain behavior has not been implemented yet.
+- CLI parsing is currently a structural foundation; full command execution remains pending.
 
 ## Next recommended task
 
-Implement `src/units.rs` and `src/geo.rs`. Add focused Rust tests, then implement the corresponding Python reference calculations and compare representative values.
+Add shared known-value/reference vectors for geometry and units, run the Rust and Python calculations against them, document quantity-specific tolerances, then begin the SRTM HGT implementation according to `doc/SPECIFICATION.md`.
 
 ## Validation
 
-The repository now contains a Cargo manifest and CI configuration. Full Rust validation should be run locally/through CI after the scaffold is synchronized. Numerical differential validation begins with the first implemented domain functions.
+Rust unit tests now exist for the first numerical modules. CI is configured for the repository baseline. Full validation should include `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings` as implementation progresses. Python reference calculations are available for independent numerical cross-checking.
 
 ## Continuity note
 
