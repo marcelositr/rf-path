@@ -12,7 +12,11 @@ const QUERIES: usize = 100_000;
 fn write_uniform_tile(directory: &Path, key: TileKey, value: i16) {
     let path = directory.join(key.filename());
     let bytes = value.to_be_bytes();
-    let data = vec![bytes[0], bytes[1]].into_iter().cycle().take(SRTM3_SAMPLES * SRTM3_SAMPLES * 2).collect::<Vec<_>>();
+    let data = vec![bytes[0], bytes[1]]
+        .into_iter()
+        .cycle()
+        .take(SRTM3_SAMPLES * SRTM3_SAMPLES * 2)
+        .collect::<Vec<_>>();
     let mut file = File::create(path).unwrap();
     file.write_all(&data).unwrap();
 }
