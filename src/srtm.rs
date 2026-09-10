@@ -105,7 +105,7 @@ impl SrtmTile {
             self.sample(y1, x0)?,
             self.sample(y1, x1)?,
         ];
-        if samples.iter().any(|&value| value == NODATA) {
+        if samples.contains(&NODATA) {
             return Err(Error::NoData {
                 lat: point.lat_deg,
                 lon: point.lon_deg,
