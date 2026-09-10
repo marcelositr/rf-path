@@ -15,8 +15,19 @@ All notable project changes are recorded here.
 - Defined Python as a development-only reference/laboratory implementation.
 - Defined Rust/Python differential validation with quantity-specific numerical tolerances.
 - Added Python validation workflow and responsibilities to the architecture, testing, developer guide, decisions, and roadmap.
+- Updated README with the current CLI usage and implementation status.
 
 ### Implementation
 
-- No production implementation yet.
-- No Python reference tooling has been implemented yet.
+- Implemented Rust geometry, units, RF primitives, and SRTM3 terrain access.
+- Added deterministic synthetic SRTM integration tests.
+- Implemented effective-Earth curvature, LOS/reference path, terrain clearance, Fresnel classification, and `LinkAnalysis`.
+- Added end-to-end clear/obstructed analysis tests.
+- Wired the CLI into validated antenna/frequency input, `SrtmProvider`, and `analyze_link`.
+- Added the first user-visible terminal link-analysis summary.
+- Explicitly reject PNG/GeoJSON output flags until presentation/export implementations are connected.
+
+### Validation
+
+- CI run #52 closed SRTM validation with formatting, tests, and Clippy green.
+- CI run #73 validated the integrated `LinkAnalysis` workflow with formatting, tests, and Clippy green.
