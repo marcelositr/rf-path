@@ -103,13 +103,15 @@ Phase 6 is closed. Presentation and export are implemented, consume the establis
 
 ## Phase 7 — Hardening
 
-- [ ] Improve CLI diagnostics.
-- [ ] Add malformed-input tests.
+- [x] Improve CLI diagnostics.
+- [x] Add malformed-input tests.
 - [ ] Add missing-tile and NoData scenarios.
 - [ ] Benchmark terrain access.
 - [ ] Review numerical edge cases.
 - [ ] Automate selected Rust/Python differential cases.
 - [ ] Document reproducible validation examples.
+
+The first Phase 7 increment validates analysis controls before terrain access, checks the SRTM directory before analysis, adds destination context to output/export failures, and covers malformed analysis-control inputs. CI run #130 passed formatting, tests, and Clippy after the rustfmt-only correction from #129.
 
 ## Future / explicitly out of v1
 
