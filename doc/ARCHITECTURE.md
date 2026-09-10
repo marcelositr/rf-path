@@ -2,15 +2,51 @@
 
 ## 1. Architectural goals
 
-The architecture separates domain mathematics from I/O and presentation so that the RF model can be tested without real SRTM files or terminal rendering.
+The architecture separates domain mathematics from I/O, reference tooling, and presentation so that the RF model can be tested independently and audited.
 
-The preferred dependency direction is:
+The preferred production dependency direction is:
 
 `CLI → analysis → {geo, srtm, rf}`
 
 with rendering/export consuming analysis results rather than recalculating them.
 
-## 2. Planned modules
+A separate Python reference layer may validate the Rust implementation, but Python is **development/test tooling only** and is never a runtime dependency of `rf-path`.
+
+## 2. Planned repository structure
+
+```text
+rf-path/
+├── README.md
+├── Cargo.toml
+├── src/
+│   ├── main.rs
+│   ├── cli.rs
+│   ├── error.rs
+│   ├── units.rs
+│   ├── geo.rs
+│   ├── srtm.rs
+│   ├── rf.rs
+│   ├── analysis.rs
+│   ├── render.rs
+│   └── geojson_export.rs
+├── tests/
+│   ├── srtm.rs
+│   ├── geo.rs
+│   ├── rf.rs
+│   └── integration.rs
+├── tools/
+│   └── reference/
+│       ├── README.md
+│       ├── geo_reference.py
+│       ├── srtm_reference.py
+│       ├── rf_reference.py
+│       └── compare.py
+└── doc/
+```
+
+The exact Python file split may evolve, but reference tooling must remain clearly separated from production Rust code.
+
+## 3. Planned Rust modules
 
 ### `src/main.rs`
 
@@ -35,98 +71,101 @@ It must not contain RF equations.
 
 Centralizes conversion from CLI units to internal SI units.
 
-Examples:
-
-- GHz/MHz → Hz;
-- km → m where applicable.
-
 ### `src/geo.rs`
 
-Geographic primitives and path geometry.
-
-Responsibilities:
-
-- `GeoPoint`;
-- antenna endpoint representation;
-- angular/radian conversion;
-- great-circle distance;
-- robust great-circle interpolation.
+Geographic primitives and path geometry: points, angular conversion, great-circle distance, and robust great-circle interpolation.
 
 It should not know how SRTM files are stored.
 
 ### `src/srtm.rs`
 
-SRTM HGT access layer.
+SRTM HGT access layer: tile naming, memory mapping, endian decoding, row orientation, bilinear interpolation, NoData handling, and tile caching.
 
-Responsibilities:
-
-- identify HGT tile from latitude/longitude;
-- construct canonical tile filenames;
-- open and memory-map HGT files;
-- decode signed big-endian 16-bit samples;
-- handle north-to-south row ordering;
-- bilinear interpolation;
-- detect `NoData`;
-- cache open tiles.
-
-The rest of the application should depend on a terrain lookup abstraction where practical, allowing tests to use synthetic terrain.
+The analysis layer should depend on a small terrain abstraction so tests can use synthetic terrain.
 
 ### `src/rf.rs`
 
-Pure RF and propagation-model functions.
-
-Responsibilities:
-
-- wavelength;
-- first Fresnel radius;
-- FSPL;
-- effective Earth-radius model;
-- curvature/reference-path calculations.
+Pure RF and propagation-model functions: wavelength, Fresnel radius, FSPL, effective Earth radius, curvature, LOS/reference-path calculations, and clearance classification.
 
 Functions should be deterministic and independent of filesystem/CLI concerns.
 
 ### `src/analysis.rs`
 
-Orchestrates the complete link analysis.
+Orchestrates path sampling, terrain queries, endpoint altitude calculation, RF geometry, per-sample classification, and summary metrics.
 
-Responsibilities:
-
-- generate great-circle samples;
-- query terrain;
-- calculate endpoint altitudes;
-- calculate LOS/reference path;
-- calculate Fresnel radius and clearance;
-- classify each sample;
-- calculate summary metrics and worst obstruction;
-- produce a structured `LinkAnalysis` result.
-
-This module is the main domain workflow.
+This module owns the structured `LinkAnalysis` result.
 
 ### `src/render.rs`
 
-Presentation only.
-
-Responsibilities:
-
-- terminal/ASCII profile;
-- PNG rendering;
-- SVG rendering.
-
-It must consume `LinkAnalysis` and never independently recalculate terrain, Fresnel, FSPL, or curvature.
+Presentation only: terminal/ASCII, PNG, and SVG. It consumes `LinkAnalysis` and never independently recalculates terrain or RF mathematics.
 
 ### `src/geojson_export.rs`
 
-Converts analysis results into GeoJSON.
-
-It should not own RF calculations.
+Converts analysis results into GeoJSON. It does not own RF calculations.
 
 ### `src/error.rs`
 
 Shared typed errors and application `Result` conventions.
 
-Expected failures include missing tiles, malformed HGT files, invalid coordinates, invalid frequency, and terrain `NoData`.
+## 4. Python reference layer
 
-## 3. Core domain model
+### Purpose
+
+Python is an intentional **reference and laboratory implementation** for validating the Rust implementation.
+
+The reference layer exists because the project contains numerical/geospatial logic where a bug can still produce plausible-looking output. A second, simple implementation makes discrepancies visible.
+
+Python should favor clarity over performance. It may use straightforward formulas and data structures even when Rust uses optimized implementations.
+
+### Responsibilities
+
+The Python reference implementation may reproduce, independently and transparently:
+
+- unit conversions;
+- great-circle distance and sampling;
+- SRTM tile naming/indexing rules;
+- HGT decoding and interpolation using small fixtures;
+- wavelength and Fresnel calculations;
+- effective-Earth/curvature calculations;
+- LOS and clearance calculations;
+- FSPL;
+- selected end-to-end profile calculations.
+
+### Non-responsibilities
+
+Python must not:
+
+- become a runtime dependency;
+- be required for normal `rf-path` execution;
+- replace Rust production tests;
+- silently define behavior that is absent from the project specification;
+- become a second production implementation that has to be maintained feature-for-feature.
+
+The specification remains authoritative. Python is an independent check against the specification, not the source of truth.
+
+## 5. Differential validation
+
+Where practical, the project should compare Rust and Python outputs for the same controlled inputs.
+
+A comparison should define explicit tolerances rather than requiring bit-for-bit floating-point equality.
+
+Example categories:
+
+```text
+input case
+    ↓
+Python reference ──────┐
+                       ├── compare with tolerances
+Rust implementation ───┘
+                       ↓
+                 pass / discrepancy
+```
+
+The comparison tooling should report the first meaningful discrepancy and enough context to reproduce it.
+
+For numerical results, tolerances must be documented according to the quantity being compared. Distances, elevations, angles, and dB values do not necessarily require identical tolerances.
+
+## 6. Core domain model
 
 The target model is approximately:
 
@@ -176,9 +215,9 @@ LinkAnalysis
   samples
 ```
 
-Names may evolve during implementation, but the separation of concerns should remain.
+Names may evolve, but separation of concerns should remain.
 
-## 4. Terrain abstraction
+## 7. Terrain abstraction
 
 Analysis should ideally depend on a small terrain interface such as:
 
@@ -186,11 +225,11 @@ Analysis should ideally depend on a small terrain interface such as:
 TerrainProvider::elevation_at(point) -> Result<meters>
 ```
 
-The production implementation is backed by SRTM HGT files. Tests can provide a deterministic in-memory implementation.
+The production implementation is backed by SRTM HGT files. Tests can provide deterministic in-memory terrain.
 
-This avoids making mathematical tests dependent on external DEM files.
+This keeps mathematical and integration tests independent of a user's SRTM collection.
 
-## 5. Data flow
+## 8. Data flow
 
 ```text
 CLI arguments
@@ -209,41 +248,47 @@ LinkAnalysis
     ├── terminal renderer
     ├── image renderer
     └── GeoJSON exporter
+
+Development-only validation path:
+
+Specification
+    ├──→ Python reference
+    └──→ Rust implementation
+              │
+              └──→ differential comparison
 ```
 
-## 6. Error handling
+## 9. Error handling
 
-Errors should propagate through typed `Result` values.
+Errors should propagate through typed `Result` values. Do not use `unwrap()`/`expect()` for user-controlled data or filesystem operations.
 
-Do not use `unwrap()`/`expect()` for user-controlled data or filesystem operations.
+## 10. Performance strategy
 
-Panics may be acceptable only for genuine programmer invariants that cannot arise from external input, and should be rare.
-
-## 7. Performance strategy
-
-The main expected performance risks are terrain I/O and large profile sampling.
-
-Initial strategy:
+Production Rust is responsible for performance. Initial strategy:
 
 - memory-map HGT files;
 - cache opened tiles;
 - avoid loading all DEM tiles into RAM;
-- calculate the profile in one main pass where possible;
+- calculate profiles in one main pass where possible;
 - keep rendering separate from analysis.
 
-Premature parallelism is not required for version 1. Benchmark before introducing complexity.
+Python reference code is explicitly not performance-critical.
 
-## 8. Testability
+Premature parallelism is not required for v1. Benchmark before introducing complexity.
 
-Pure functions should be tested at unit level.
+## 11. Testability
 
-Integration tests should exercise the complete analysis with a synthetic terrain provider or controlled HGT fixtures.
+The project uses three complementary validation layers:
 
-Filesystem-specific HGT behavior belongs in SRTM tests; RF formulas should not require HGT files.
+1. **Rust unit tests** — fast, authoritative regression tests for production code.
+2. **Rust integration tests** — complete workflows using controlled/synthetic terrain.
+3. **Python reference/differential tests** — independent validation that important numerical behavior agrees with the specification.
 
-## 9. Dependency policy
+Python comparisons should complement, not replace, the Rust test suite.
 
-Dependencies should be added only when they have a clear role.
+## 12. Dependency policy
+
+Production dependencies should be added only when they have a clear role.
 
 Initial intended dependencies:
 
@@ -254,4 +299,4 @@ Initial intended dependencies:
 - `serde` / `serde_json` — serialization;
 - `geojson` — GeoJSON representation.
 
-Avoid introducing a large GIS framework when the required v1 geometry can remain explicit and auditable.
+Python tooling may have its own development-only dependencies, but the production Rust binary must remain independent of Python.
