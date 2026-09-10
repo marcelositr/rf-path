@@ -74,14 +74,17 @@ Phase 4 was validated by green CI after the formatting correction. The model use
 - [x] Identify the minimum-clearance worst point.
 - [x] Produce summary blocking metrics.
 - [x] Add end-to-end clear/obstructed synthetic-terrain tests.
-- [ ] Validate the complete `LinkAnalysis` workflow through green CI.
+- [x] Validate the complete `LinkAnalysis` workflow through green CI (#73).
 - [ ] Cross-check representative end-to-end profiles against Python.
+- [ ] Validate the CLI execution path through green CI.
+- [x] Wire CLI arguments to `analyze_link`.
+- [x] Add first user-visible terminal summary.
 
-**Current focus:** validate the integrated analysis through CI, then wire the CLI to `analyze_link` and expose the first user-visible summary.
+The core analysis workflow and CLI wiring are now implemented. Phase 5 remains open for end-to-end Python differential validation and CLI validation.
 
 ## Phase 6 — Presentation and export
 
-- [ ] Implement terminal summary/profile.
+- [ ] Implement terminal profile/details beyond the summary.
 - [ ] Implement PNG profile.
 - [ ] Implement SVG profile.
 - [ ] Implement GeoJSON export.
