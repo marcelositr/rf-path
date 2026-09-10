@@ -32,6 +32,8 @@ All notable project changes are recorded here.
 - Added `render_terminal_profile` to render the complete sampled profile as an auditable terminal table.
 - Added the opt-in `--profile` CLI flag for detailed terminal output.
 - Explicitly reject PNG/GeoJSON output flags until presentation/export implementations are connected.
+- Corrected the differential regression import layout to match current rustfmt behavior.
+- Corrected the terminal-profile test line-count expectation and removed unused test imports.
 
 ### Validation
 
@@ -40,4 +42,6 @@ All notable project changes are recorded here.
 - CI runs #75–#79 were diagnosed as repeated formatter-only failures in `src/main.rs`; the issue was corrected and CI #81 returned green.
 - CI runs #90–#93 exposed formatter-only issues introduced while integrating the differential regression; those issues were corrected without removing the regression coverage.
 - CI run #94 passed formatting, all tests, and Clippy, validating the complete current Rust/Python end-to-end differential regression.
-- CI runs #100–#101 exposed formatter-only issues during terminal-profile/differential-test integration; those issues were corrected. CI #102 is the validation run for the corrected state.
+- CI runs #100–#105 exposed repeated formatter-only failures during terminal-profile/differential-test integration; the root cause was the differential-test import layout under current rustfmt 1.98.1.
+- CI run #106 reached `cargo test` after formatting was fixed and exposed a stale terminal-profile test line-count assertion; the test was corrected.
+- CI run #107 validates the corrected terminal-profile test path; its final result is still pending at the time of this documentation update.
