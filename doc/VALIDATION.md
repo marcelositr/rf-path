@@ -85,6 +85,18 @@ cargo run -- \
 
 The terminal profile, graphical profile, and GeoJSON export are all derived from the same `LinkAnalysis` result.
 
+## SRTM access benchmark
+
+A deterministic benchmark harness is available as `srtm_access`:
+
+```bash
+cargo bench --bench srtm_access
+```
+
+The harness creates two synthetic SRTM3 tiles, performs 100,000 bilinear elevation queries, and reports elapsed time per query for two workloads: repeated access within one cached tile, and alternating access between two cached tiles. The benchmark measures provider lookup/interpolation after tile creation; it is not a benchmark of filesystem download or decompression.
+
+Run it on a quiet machine and record the output together with the Rust toolchain and host environment before comparing baselines. Do not treat wall-clock values from different machines as directly comparable.
+
 ## Exit-code convention
 
 CLI validation failures return process exit code `2` and write the diagnostic to stderr. Successful analysis returns `0`.
