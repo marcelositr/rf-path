@@ -55,15 +55,15 @@ Phase 3 was closed by CI run #52, which passed formatting, all tests (including 
 
 - [x] Implement wavelength.
 - [x] Implement first Fresnel radius.
-- [ ] Implement effective Earth radius model.
-- [ ] Implement LOS/reference-path calculations.
-- [ ] Implement clearance and classification.
+- [x] Implement effective Earth radius model.
+- [x] Implement LOS/reference-path calculations.
+- [x] Implement clearance and classification.
 - [x] Implement FSPL.
 - [x] Add known-value Rust tests for implemented RF primitives.
 - [x] Add independent Python reference calculations for implemented RF primitives.
-- [ ] Differential-test the complete RF model with explicit tolerances.
+- [x] Differential-test the effective-Earth and clearance model with explicit tolerances.
 
-**Current focus:** effective Earth radius (`k=4/3` default), LOS/reference path, terrain clearance, and 60% first-Fresnel classification.
+The RF model uses configurable `k` with default `4/3`, the parabolic bulge approximation, linear endpoint reference altitude, and the 60% first-Fresnel classification. The implementation is now ready for integration into `LinkAnalysis`.
 
 ## Phase 5 — Link analysis
 
@@ -73,6 +73,8 @@ Phase 3 was closed by CI run #52, which passed formatting, all tests (including 
 - [ ] Produce summary metrics.
 - [ ] Add end-to-end tests with synthetic terrain.
 - [ ] Cross-check representative end-to-end profiles against Python.
+
+**Current focus:** build `LinkAnalysis` around great-circle sampling and `TerrainProvider`, with no RF recalculation in rendering/export layers.
 
 ## Phase 6 — Presentation and export
 
