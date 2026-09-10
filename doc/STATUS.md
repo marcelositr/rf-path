@@ -71,10 +71,14 @@ PNG/SVG rendering and GeoJSON export remain separate presentation/export work. T
 - [x] Implement `render_terminal_profile` from `LinkAnalysis`.
 - [x] Add the `--profile` CLI flag.
 - [x] Add deterministic terminal-profile rendering tests and explicit status labels.
+- [x] Diagnose CI #102–#105 as repeated formatter-only failures caused by the differential-test import layout under current rustfmt 1.98.1.
+- [x] Correct `tests/differential.rs` to the formatter-required one-line import layout.
+- [x] Diagnose CI #106 as the first non-formatting failure in the terminal-profile test: the expected line count was stale after the renderer added its table separator/header structure.
+- [x] Correct the terminal-profile test expectation and remove now-unused test imports.
 
 ## Current task
 
-Validate the new terminal profile path through green CI. Then continue Phase 6 with PNG/SVG rendering and GeoJSON export, keeping all presentation layers downstream of `LinkAnalysis`.
+Validate the corrected terminal-profile path through green CI. Then document `--profile` usage in the README and continue Phase 6 with PNG/SVG rendering and GeoJSON export, keeping all presentation layers downstream of `LinkAnalysis`.
 
 ## Known constraints
 
@@ -89,11 +93,11 @@ Validate the new terminal profile path through green CI. Then continue Phase 6 w
 
 ## Next recommended task
 
-Verify the terminal profile implementation through the current CI run. Once green, document the `--profile` usage and begin PNG/SVG rendering from the same `LinkAnalysis` sample data.
+Wait for the current CI validation of the corrected terminal-profile test to complete. Once green, document the `--profile` usage and begin PNG/SVG rendering from the same `LinkAnalysis` sample data.
 
 ## Validation
 
-CI #94 validated the Rust/Python end-to-end differential regression with formatting, tests, and Clippy green. CI #100 and #101 were formatter-only regressions during integration; those issues are corrected. CI #102 is the current validation run for the corrected differential formatting plus the terminal-profile changes.
+CI #94 validated the Rust/Python end-to-end differential regression with formatting, tests, and Clippy green. CI #100–#105 exposed repeated formatter-only failures during terminal-profile/differential-test integration; the differential import is now in the exact layout expected by rustfmt 1.98.1. CI #106 reached `cargo test` and exposed a stale renderer test line-count assertion; that test is now corrected. The current CI run #107 validates the corrected state.
 
 ## Continuity note
 
