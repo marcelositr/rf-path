@@ -107,15 +107,17 @@ Phase 6 is closed. Presentation and export are implemented, consume the establis
 - [x] Add malformed-input tests.
 - [x] Add missing-tile and NoData scenarios.
 - [ ] Benchmark terrain access.
-- [ ] Review numerical edge cases.
+- [x] Review numerical edge cases.
 - [ ] Automate selected Rust/Python differential cases.
-- [ ] Document reproducible validation examples.
+- [x] Document reproducible validation examples.
 
 The first Phase 7 increment validates analysis controls before terrain access, checks the SRTM directory before analysis, adds destination context to output/export failures, and covers malformed analysis-control inputs. CI run #130 passed formatting, tests, and Clippy after the rustfmt-only correction from #129.
 
 The second Phase 7 increment adds end-to-end coverage for missing SRTM tiles and endpoint `NoData`. The tests verify that terrain access failures remain explicit and that the analysis does not invent replacement elevation data. CI run #137 passed formatting, tests, and Clippy after correcting the synthetic HGT fixture to target the actual south-edge sample cell.
 
-The numerical edge-case increment hardens non-finite RF distances, overflow-safe Fresnel arithmetic, effective Earth-radius/bulge validation, antipodal great-circle interpolation, direct-coordinate validation in `analyze_link`, and early frequency validation. Deterministic unit/integration tests cover these cases; CI validation is pending on the current head.
+The numerical edge-case increment hardens non-finite RF distances, overflow-safe Fresnel arithmetic, effective Earth-radius/bulge validation, antipodal great-circle interpolation, direct-coordinate validation in `analyze_link`, and early frequency validation. Deterministic unit/integration tests cover these cases, and CI run #155 passed formatting, all tests, and Clippy on the resulting head.
+
+The reproducible-validation increment adds `doc/VALIDATION.md` with automated Rust quality gates, deterministic CLI failure cases, a complete local-SRTM CLI example, and the project exit-code convention.
 
 ## Future / explicitly out of v1
 
