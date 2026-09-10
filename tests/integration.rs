@@ -164,11 +164,11 @@ fn link_analysis_reports_srtm_nodata_at_endpoint() {
     fs::write(&path, bytes).unwrap();
 
     let tx = AntennaPoint {
-        position: GeoPoint::new(0.0, 0.0).unwrap(),
+        position: GeoPoint::new(1.0, 0.0).unwrap(),
         antenna_height_m: 30.0,
     };
     let rx = AntennaPoint {
-        position: GeoPoint::new(0.0, 0.01).unwrap(),
+        position: GeoPoint::new(1.0, 0.01).unwrap(),
         antenna_height_m: 30.0,
     };
     let mut terrain = SrtmProvider::new(&directory);
@@ -183,6 +183,6 @@ fn link_analysis_reports_srtm_nodata_at_endpoint() {
         DEFAULT_FRESNEL_CLEARANCE_RATIO,
     );
 
-    assert!(matches!(result, Err(Error::NoData { lat, lon }) if lat == 0.0 && lon == 0.0));
+    assert!(matches!(result, Err(Error::NoData { lat, lon }) if lat == 1.0 && lon == 0.0));
     fs::remove_dir_all(directory).unwrap();
 }
