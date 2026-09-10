@@ -6,7 +6,7 @@
 
 ## Current state
 
-The Rust foundation, geometry, SRTM terrain layer, and core RF propagation/clearance primitives are implemented. The effective-Earth model uses configurable `k`, defaulting to `4/3`, with a single parabolic curvature convention. LOS/reference-path elevation, terrain clearance, and the 60% first-Fresnel classification are now implemented and covered by deterministic Rust tests plus independent Python reference formulas.
+The Rust foundation, geometry, SRTM terrain layer, and core RF propagation/clearance primitives are implemented. The effective-Earth model uses configurable `k`, defaulting to `4/3`, with a single parabolic curvature convention. LOS/reference-path elevation, terrain clearance, and the 60% first-Fresnel classification are implemented and covered by deterministic Rust tests plus independent Python reference formulas.
 
 ## Completed
 
@@ -45,10 +45,11 @@ The Rust foundation, geometry, SRTM terrain layer, and core RF propagation/clear
 - [x] Implement Clear/FresnelPartial/LineOfSightBlocked classification.
 - [x] Add Rust/Python reference vectors for effective Earth and clearance calculations.
 - [x] Record the effective-Earth curvature convention in `DECISIONS.md`.
+- [x] Correct formatting for the new RF analysis code and integration tests.
 
 ## Current task
 
-Validate the new RF primitives through green CI, then move into Phase 5: combine geometry, SRTM terrain, and RF calculations into the `LinkAnalysis` result model and auditable sampled profiles.
+Confirm the final RF validation commit through green CI. The prior RF CI attempt failed only at formatting; the reported `src/analysis.rs` formatting has been corrected. After green CI, move directly to Phase 5 `LinkAnalysis` integration.
 
 ## Known constraints
 
@@ -65,7 +66,7 @@ Build the `LinkAnalysis` layer around great-circle sampling and `TerrainProvider
 
 ## Validation
 
-CI run #52 for the SRTM validation commit passed the complete required suite. The effective-Earth and clearance implementation is in `src/analysis.rs`, with Python reference formulas in `tools/reference/rf_reference.py` and integration vectors in `tests/rf.rs`. The latest CI run for this RF increment is pending; green CI is required before closing Phase 4.
+CI run #52 for the SRTM validation commit passed the complete required suite. CI run #60 exposed only formatting in the new RF analysis code; no RF tests ran on that attempt. The corrected RF implementation is in `src/analysis.rs`, `tests/rf.rs`, and `tools/reference/rf_reference.py`; the next CI run is authoritative for closing Phase 4.
 
 ## Continuity note
 
