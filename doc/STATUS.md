@@ -10,7 +10,7 @@ The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance prim
 
 Phase 6 presentation/export work is closed. PNG/SVG rendering is deliberately font-independent so graphical generation does not require an installed system font, while the labelled terminal profile remains the human-readable presentation.
 
-Phase 7 has started with CLI hardening: analysis controls are validated before terrain access, SRTM directory paths are checked early, output/export failures include their destination path, and malformed CLI-control inputs have dedicated tests.
+Phase 7 has progressed through CLI hardening and terrain failure coverage: analysis controls are validated before terrain access, SRTM directory paths are checked early, output/export failures include their destination path, malformed CLI controls have dedicated tests, and end-to-end missing-tile/NoData scenarios now verify explicit terrain failures.
 
 ## Completed
 
@@ -94,10 +94,14 @@ Phase 7 has started with CLI hardening: analysis controls are validated before t
 - [x] Improve CLI diagnostics for invalid analysis controls, SRTM directory validation, and output/export failures.
 - [x] Add dedicated malformed-input tests for analysis controls while preserving existing antenna/frequency validation coverage.
 - [x] Validate the CLI-hardening increment through green CI (#130).
+- [x] Add end-to-end coverage for missing SRTM tiles.
+- [x] Add end-to-end coverage for SRTM `NoData` at an endpoint.
+- [x] Preserve explicit `NoData` failure rather than inventing terrain values.
+- [x] Validate the missing-tile/NoData increment through green CI (#137).
 
 ## Current task
 
-Continue Phase 7 with missing-tile and NoData scenarios, then review numerical edge cases and reproducible CLI validation examples.
+Continue Phase 7 with numerical edge-case review and reproducible CLI validation examples. Benchmark terrain access after correctness-focused hardening is complete.
 
 ## Known constraints
 
@@ -114,11 +118,13 @@ Continue Phase 7 with missing-tile and NoData scenarios, then review numerical e
 
 ## Next recommended task
 
-Add end-to-end coverage for a missing SRTM tile and a sampled NoData cell, asserting actionable diagnostics and preserving explicit failure rather than inventing terrain.
+Review numerical edge cases across frequency, geometry, sampling, effective-Earth curvature, Fresnel calculations, and degenerate/near-degenerate path inputs; add deterministic tests only where the expected behavior is unambiguous.
 
 ## Validation
 
-CI run #124 validated the complete presentation/export path with formatting, all tests, and Clippy green. Phase 7 CLI hardening initially exposed a rustfmt 1.98.1 formatting issue in CI #129; after the formatter correction, CI run #130 passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`.
+CI run #124 validated the complete presentation/export path with formatting, all tests, and Clippy green. CI run #130 validated the first Phase 7 CLI-hardening increment. CI run #137 on `b43bbd5` passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`, including the new missing-tile and `NoData` integration scenarios.
+
+Local validation on `72a12d2` exposed the fixture-indexing error before it reached the final CI pass; the corrected fixture is now represented by `b43bbd5` and CI #137 is green.
 
 ## Continuity note
 
