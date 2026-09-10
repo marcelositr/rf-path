@@ -70,7 +70,7 @@ where
     let max_distance_km = analysis
         .samples
         .last()
-        .map(|s| s.distance_m / 1_000.0)
+        .map(|sample| sample.distance_m / 1_000.0)
         .unwrap_or(0.0);
     let mut y_min = f64::INFINITY;
     let mut y_max = f64::NEG_INFINITY;
@@ -100,75 +100,53 @@ where
         1.0
     };
 
+    // Keep graphical output independent of host fonts. The terminal renderer is
+    // the authoritative labelled presentation; the image carries the same
+    // terrain, effective LOS, and Fresnel curves without font dependencies.
     let mut chart = ChartBuilder::on(&root)
-        .caption(
-            format!(
-                "RF-Path profile — {:.3} km @ {:.3} GHz",
-                analysis.distance_m / 1_000.0,
-                analysis.frequency_hz / 1.0e9
-            ),
-            ("sans-serif", 28),
-        )
-        .margin(20)
-        .x_label_area_size(45)
-        .y_label_area_size(60)
+        .margin(30)
         .build_cartesian_2d(0.0..x_max, y_min..y_max)
         .map_err(|error| Error::InvalidInput(format!("failed to build chart: {error:?}")))?;
-
-    chart
-        .configure_mesh()
-        .x_desc("Distance (km)")
-        .y_desc("Elevation / path height (m)")
-        .draw()
-        .map_err(|error| Error::InvalidInput(format!("failed to draw chart mesh: {error:?}")))?;
 
     let terrain = analysis
         .samples
         .iter()
-        .map(|s| (s.distance_m / 1_000.0, s.terrain_m));
+        .map(|sample| (sample.distance_m / 1_000.0, sample.terrain_m));
     let los = analysis
         .samples
         .iter()
-        .map(|s| (s.distance_m / 1_000.0, s.los_m));
+        .map(|sample| (sample.distance_m / 1_000.0, sample.los_m));
     let fresnel_upper = analysis
         .samples
         .iter()
-        .map(|s| (s.distance_m / 1_000.0, s.los_m + s.fresnel_radius_m));
+        .map(|sample| {
+            (
+                sample.distance_m / 1_000.0,
+                sample.los_m + sample.fresnel_radius_m,
+            )
+        });
     let fresnel_lower = analysis
         .samples
         .iter()
-        .map(|s| (s.distance_m / 1_000.0, s.los_m - s.fresnel_radius_m));
+        .map(|sample| {
+            (
+                sample.distance_m / 1_000.0,
+                sample.los_m - sample.fresnel_radius_m,
+            )
+        });
 
     chart
         .draw_series(LineSeries::new(terrain, &BLACK))
-        .map_err(|error| Error::InvalidInput(format!("failed to draw terrain: {error:?}")))?
-        .label("Terrain")
-        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], BLACK));
-
+        .map_err(|error| Error::InvalidInput(format!("failed to draw terrain: {error:?}")))?;
     chart
         .draw_series(LineSeries::new(los, &BLUE))
-        .map_err(|error| Error::InvalidInput(format!("failed to draw LOS: {error:?}")))?
-        .label("Effective LOS")
-        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], BLUE));
-
+        .map_err(|error| Error::InvalidInput(format!("failed to draw LOS: {error:?}")))?;
     chart
         .draw_series(LineSeries::new(fresnel_upper, &RED))
-        .map_err(|error| Error::InvalidInput(format!("failed to draw Fresnel upper: {error:?}")))?
-        .label("Fresnel +")
-        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], RED));
-
+        .map_err(|error| Error::InvalidInput(format!("failed to draw Fresnel upper: {error:?}")))?;
     chart
         .draw_series(LineSeries::new(fresnel_lower, &RED))
-        .map_err(|error| Error::InvalidInput(format!("failed to draw Fresnel lower: {error:?}")))?
-        .label("Fresnel -")
-        .legend(|(x, y)| PathElement::new(vec![(x, y), (x + 20, y)], RED));
-
-    chart
-        .configure_series_labels()
-        .border_style(BLACK)
-        .background_style(WHITE.mix(0.8))
-        .draw()
-        .map_err(|error| Error::InvalidInput(format!("failed to draw chart legend: {error:?}")))?;
+        .map_err(|error| Error::InvalidInput(format!("failed to draw Fresnel lower: {error:?}")))?;
 
     root.present()
         .map_err(|error| Error::InvalidInput(format!("failed to finalize chart: {error:?}")))?;
