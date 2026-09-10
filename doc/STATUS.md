@@ -8,7 +8,9 @@
 
 The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, integrated `LinkAnalysis` workflow, CLI execution path, Rust/Python differential regression, and presentation/export layers are implemented. The CLI supports the detailed terminal profile, PNG/SVG profile charts, and GeoJSON export, all downstream of the same `LinkAnalysis` result.
 
-The remaining Phase 6 work is CI validation of the complete presentation/export path. After that, development moves to Phase 7 hardening.
+The first presentation/export CI cycle exposed two formatting-only failures in the new renderer/export files. Those were corrected. A local test then exposed a host-environment font dependency in Plotters; graphical rendering is now deliberately font-independent so PNG/SVG generation does not require an installed system font.
+
+The remaining Phase 6 work is CI validation of this corrected presentation/export path. After that, development moves to Phase 7 hardening.
 
 ## Completed
 
@@ -84,6 +86,10 @@ The remaining Phase 6 work is CI validation of the complete presentation/export 
 - [x] Wire `--output-image` with `.png`/`.svg` extension validation.
 - [x] Wire `--export-geojson` into the same analysed result.
 - [x] Keep terminal, image, and GeoJSON presentation layers downstream of `LinkAnalysis`.
+- [x] Diagnose CI #116/#118 as `cargo fmt --check` regressions in the newly added presentation/export files.
+- [x] Correct presentation/export formatting for the current rustfmt 1.98.1.
+- [x] Diagnose the local PNG/SVG test failure caused by unavailable host fonts in Plotters.
+- [x] Make PNG/SVG rendering independent of installed system fonts while preserving the same analysis curves.
 
 ## Current task
 
@@ -99,14 +105,15 @@ Run and validate the complete presentation/export path through CI. The next Phas
 - The effective-Earth model uses the agreed parabolic approximation; a more exact propagation model is future work.
 - Rendering/export consumes `LinkAnalysis` and does not recalculate domain math.
 - `--output-image` currently accepts `.png` and `.svg`; other extensions are rejected explicitly.
+- PNG/SVG rendering intentionally does not require a system-installed font; the labelled terminal profile remains the human-readable presentation.
 
 ## Next recommended task
 
-Validate the new image/GeoJSON code locally and through GitHub Actions. If green, begin Phase 7 with CLI diagnostics and malformed-input coverage.
+Validate the corrected image/GeoJSON code locally and through GitHub Actions. If green, begin Phase 7 with CLI diagnostics and malformed-input coverage.
 
 ## Validation
 
-The repository's last explicitly verified green CI state before the presentation/export implementation was CI #107, which passed formatting, tests, and Clippy after the terminal-profile test correction. The current image/export changes need a new CI validation cycle.
+The repository's last explicitly verified green CI state before the presentation/export implementation was CI #107, which passed formatting, tests, and Clippy after the terminal-profile test correction. CI #116 and #118 were formatting-only failures in the new presentation/export code. The current commit contains the corresponding formatting and font-independence fixes; a fresh CI result is still required.
 
 ## Continuity note
 
