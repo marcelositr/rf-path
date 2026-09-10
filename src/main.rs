@@ -5,7 +5,7 @@ use std::process::ExitCode;
 
 use clap::Parser;
 use rf_path::analysis::analyze_link;
-use rf_path::cli::{parse_antenna_point, Cli};
+use rf_path::cli::{parse_antenna_point, validate_analysis_options, Cli};
 use rf_path::error::{Error, Result};
 use rf_path::geojson_export::export_geojson;
 use rf_path::render::{render_profile_png, render_profile_svg, render_terminal_profile};
@@ -24,6 +24,7 @@ fn main() -> ExitCode {
 
 fn run() -> Result<()> {
     let cli = Cli::parse();
+    validate_analysis_options(cli.samples, cli.k_factor, cli.fresnel_threshold)?;
 
     let tx = parse_antenna_point(
         cli.tx
@@ -46,8 +47,15 @@ fn run() -> Result<()> {
         .srtm_dir
         .as_deref()
         .ok_or_else(|| Error::InvalidInput("--srtm-dir is required".into()))?;
+    let srtm_path = Path::new(srtm_dir);
+    if !srtm_path.is_dir() {
+        return Err(Error::InvalidInput(format!(
+            "--srtm-dir is not a directory: {}",
+            srtm_path.display()
+        )));
+    }
 
-    let mut terrain = SrtmProvider::new(srtm_dir);
+    let mut terrain = SrtmProvider::new(srtm_path);
     let analysis = analyze_link(
         &mut terrain,
         tx,
@@ -92,7 +100,9 @@ fn run() -> Result<()> {
     }
 
     if let Some(path) = cli.export_geojson.as_deref() {
-        export_geojson(&analysis, path)?;
+        export_geojson(&analysis, path).map_err(|error| {
+            Error::InvalidInput(format!("failed to export GeoJSON to {path}: {error}"))
+        })?;
         println!("  GeoJSON: {path}");
     }
 
@@ -108,11 +118,17 @@ fn render_profile_image(analysis: &rf_path::analysis::LinkAnalysis, path: &str) 
             Error::InvalidInput("--output-image must use a .png or .svg extension".into())
         })?;
 
-    match extension.as_str() {
+    let result = match extension.as_str() {
         "png" => render_profile_png(analysis, path),
         "svg" => render_profile_svg(analysis, path),
-        _ => Err(Error::InvalidInput(
-            "--output-image must use a .png or .svg extension".into(),
-        )),
-    }
+        _ => {
+            return Err(Error::InvalidInput(
+                "--output-image must use a .png or .svg extension".into(),
+            ));
+        }
+    };
+
+    result.map_err(|error| {
+        Error::InvalidInput(format!("failed to write profile image to {path}: {error}"))
+    })
 }
