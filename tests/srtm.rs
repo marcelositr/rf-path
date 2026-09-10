@@ -40,6 +40,19 @@ fn negative_coordinates_use_floor_tile_semantics() {
 }
 
 #[test]
+fn exact_integer_boundaries_select_the_northeast_tile() {
+    let cases = [
+        (GeoPoint::new(1.0, 0.5).unwrap(), TileKey { south_lat: 1, west_lon: 0 }),
+        (GeoPoint::new(0.5, 1.0).unwrap(), TileKey { south_lat: 0, west_lon: 1 }),
+        (GeoPoint::new(-20.0, -48.0).unwrap(), TileKey { south_lat: -20, west_lon: -48 }),
+    ];
+
+    for (point, expected) in cases {
+        assert_eq!(TileKey::from_point(point), expected);
+    }
+}
+
+#[test]
 fn bilinear_interpolation_respects_hgt_row_orientation() {
     let directory = temp_dir();
     let key = TileKey {
@@ -58,6 +71,78 @@ fn bilinear_interpolation_respects_hgt_row_orientation() {
 
     let expected = 1000.0 + 0.5 * 10.0 + 0.25 * 4.0;
     assert_relative_eq!(elevation, expected, max_relative = 1e-12);
+
+    fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn interpolation_matches_controlled_python_reference_vectors() {
+    let directory = temp_dir();
+    let key = TileKey {
+        south_lat: 0,
+        west_lon: 0,
+    };
+    write_tile(&directory, key, |row, column| {
+        1000 + row as i16 * 10 + column as i16 * 4
+    });
+
+    // Values independently evaluated with tools/reference/srtm_reference.py.
+    let vectors = [
+        (1.0, 0.0, 1000.0),
+        (1.0 - 600.5 / 1200.0, 400.25 / 1200.0, 1000.0 + 600.5 * 10.0 + 400.25 * 4.0),
+        (0.0, 1.0, 1000.0 + 1200.0 * 10.0 + 1200.0 * 4.0),
+    ];
+
+    let mut provider = SrtmProvider::new(&directory);
+    for (lat, lon, expected) in vectors {
+        let point = GeoPoint::new(lat, lon).unwrap();
+        let elevation = provider.elevation_at(point).unwrap();
+        assert_relative_eq!(elevation, expected, max_relative = 1e-12);
+    }
+
+    fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn interpolation_handles_all_tile_corners() {
+    let directory = temp_dir();
+    let key = TileKey {
+        south_lat: 0,
+        west_lon: 0,
+    };
+    write_tile(&directory, key, |row, column| {
+        row as i16 * 10 + column as i16
+    });
+
+    let points = [
+        (GeoPoint::new(1.0, 0.0).unwrap(), 0.0),
+        (GeoPoint::new(1.0, 1.0).unwrap(), 1200.0),
+        (GeoPoint::new(0.0, 0.0).unwrap(), 12000.0),
+        (GeoPoint::new(0.0, 1.0).unwrap(), 13200.0),
+    ];
+
+    let mut provider = SrtmProvider::new(&directory);
+    for (point, expected) in points {
+        let elevation = provider.elevation_at(point).unwrap();
+        assert_relative_eq!(elevation, expected, max_relative = 1e-12);
+    }
+
+    fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn malformed_tile_size_is_rejected() {
+    let directory = temp_dir();
+    let key = TileKey {
+        south_lat: 0,
+        west_lon: 0,
+    };
+    let path = directory.join(key.filename());
+    let mut file = File::create(path).unwrap();
+    file.write_all(&[0, 1]).unwrap();
+
+    let result = rf_path::srtm::SrtmTile::open(&directory, key);
+    assert!(matches!(result, Err(rf_path::error::Error::InvalidTile(_))));
 
     fs::remove_dir_all(directory).unwrap();
 }
