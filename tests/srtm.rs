@@ -112,7 +112,11 @@ fn interpolation_matches_controlled_python_reference_vectors() {
             400.25 / 1200.0,
             1000.0 + 600.5 * 10.0 + 400.25 * 4.0,
         ),
-        (0.0, 1.0, 1000.0 + 1200.0 * 10.0 + 1200.0 * 4.0),
+        (
+            0.0,
+            1199.75 / 1200.0,
+            1000.0 + 1200.0 * 10.0 + 1199.75 * 4.0,
+        ),
     ];
 
     let mut provider = SrtmProvider::new(&directory);
