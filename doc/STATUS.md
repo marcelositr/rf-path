@@ -10,7 +10,7 @@ The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance prim
 
 Phase 6 presentation/export work is closed. PNG/SVG rendering is deliberately font-independent so graphical generation does not require an installed system font, while the labelled terminal profile remains the human-readable presentation.
 
-Phase 7 has progressed through CLI hardening and terrain failure coverage: analysis controls are validated before terrain access, SRTM directory paths are checked early, output/export failures include their destination path, malformed CLI controls have dedicated tests, and end-to-end missing-tile/NoData scenarios now verify explicit terrain failures.
+Phase 7 has progressed through CLI hardening and terrain failure coverage: analysis controls are validated before terrain access, SRTM directory paths are checked early, output/export failures include their destination path, malformed CLI controls have dedicated tests, and end-to-end missing-tile/NoData scenarios verify explicit terrain failures. Numerical edge-case hardening is now implemented in the geometry, RF, and link-analysis layers and is awaiting the final CI validation pass.
 
 ## Completed
 
@@ -98,10 +98,15 @@ Phase 7 has progressed through CLI hardening and terrain failure coverage: analy
 - [x] Add end-to-end coverage for SRTM `NoData` at an endpoint.
 - [x] Preserve explicit `NoData` failure rather than inventing terrain values.
 - [x] Validate the missing-tile/NoData increment through green CI (#137).
+- [x] Reject non-finite Fresnel distances and make Fresnel geometric arithmetic overflow-safe.
+- [x] Reject non-finite effective Earth radius and curvature bulge results.
+- [x] Reject antipodal great-circle interpolation where the shortest path is not unique.
+- [x] Validate `analyze_link` coordinates before terrain access and validate frequency before deriving wavelength.
+- [x] Add deterministic integration/unit coverage for these numerical edge cases.
 
 ## Current task
 
-Continue Phase 7 with numerical edge-case review and reproducible CLI validation examples. Benchmark terrain access after correctness-focused hardening is complete.
+Finish CI validation of the numerical edge-case hardening, then document reproducible CLI validation examples. Benchmark terrain access only after correctness-focused hardening is fully validated.
 
 ## Known constraints
 
@@ -118,13 +123,13 @@ Continue Phase 7 with numerical edge-case review and reproducible CLI validation
 
 ## Next recommended task
 
-Review numerical edge cases across frequency, geometry, sampling, effective-Earth curvature, Fresnel calculations, and degenerate/near-degenerate path inputs; add deterministic tests only where the expected behavior is unambiguous.
+Complete the pending CI run for the numerical edge-case hardening. Once green, move to reproducible CLI validation examples and then terrain-access benchmarking.
 
 ## Validation
 
 CI run #124 validated the complete presentation/export path with formatting, all tests, and Clippy green. CI run #130 validated the first Phase 7 CLI-hardening increment. CI run #137 on `b43bbd5` passed `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`, including the new missing-tile and `NoData` integration scenarios.
 
-Local validation on `72a12d2` exposed the fixture-indexing error before it reached the final CI pass; the corrected fixture is now represented by `b43bbd5` and CI #137 is green.
+CI runs #148 and #149 exposed rustfmt layout regressions while adding numerical edge-case coverage; both stopped before tests and linting. The current head is `0c63c709fa5529db84ab5fe54fb986c2653baea4`, with CI run #150 queued.
 
 ## Continuity note
 
