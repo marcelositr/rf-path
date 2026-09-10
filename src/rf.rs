@@ -14,13 +14,12 @@ pub fn fresnel_radius_m(frequency_hz: f64, d1_m: f64, d2_m: f64) -> Result<f64> 
     if !d1_m.is_finite() || !d2_m.is_finite() || d1_m < 0.0 || d2_m < 0.0 {
         return Err(Error::InvalidInput("invalid Fresnel distances".into()));
     }
-    let total = d1_m + d2_m;
-    if !total.is_finite() || total <= 0.0 {
+    let smaller = d1_m.min(d2_m);
+    let larger = d1_m.max(d2_m);
+    if larger <= 0.0 {
         return Err(Error::InvalidInput("invalid Fresnel distances".into()));
     }
     let wavelength_m = wavelength_m(frequency_hz)?;
-    let smaller = d1_m.min(d2_m);
-    let larger = d1_m.max(d2_m);
     let geometric_term = smaller / (1.0 + smaller / larger);
     let value = wavelength_m * geometric_term;
     if !value.is_finite() || value < 0.0 {
