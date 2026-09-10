@@ -48,15 +48,15 @@ Complete SRTM validation. The implementation itself is in place, and the current
 - SRTM data will be supplied locally and must not be committed to the repository.
 - No real SRTM fixtures are present yet.
 - CLI parsing is currently a structural foundation; full command execution remains pending.
-- The latest recorded CI failure was caused first by SRTM-test formatting and then by Clippy's `manual_contains` lint; both issues have been corrected in `main`.
+- The latest recorded CI failures were caused first by SRTM-test formatting and then by Clippy's `manual_contains` lint; both issues have been corrected in `main`. The latest code commit passed the complete CI suite.
 
 ## Next recommended task
 
-Verify the CI run for the latest Clippy fix. If green, add the remaining SRTM boundary/malformed-fixture tests and controlled Rust/Python differential vectors. Then proceed to the effective-Earth/LOS and clearance analysis layer.
+Add the remaining SRTM boundary/malformed-fixture tests and controlled Rust/Python differential vectors. Then proceed to the effective-Earth/LOS and clearance analysis layer.
 
 ## Validation
 
-GitHub Actions run #35 for commit `c5c8d0a1902def1dc8fbc877963bd8b01e95b079` passed `cargo fmt --check` and `cargo test`, including all four current SRTM integration tests, but failed `cargo clippy --all-targets --all-features -- -D warnings` on `src/srtm.rs` line 108 (`manual_contains`). Commit `34b401edb8411802083db86c732a16e13327a3d4` fixes that lint. A subsequent CI run must validate the complete required checks: `cargo fmt --check`, `cargo test`, and `cargo clippy --all-targets --all-features -- -D warnings`.
+GitHub Actions run #36 for commit `34b401edb8411802083db86c732a16e13327a3d4` passed the complete required suite: `cargo fmt --check`, `cargo test` (including all four current SRTM integration tests), and `cargo clippy --all-targets --all-features -- -D warnings`. The earlier run #35 failure was the `manual_contains` lint in `src/srtm.rs`; commit #36 fixes it. A documentation-only commit followed and its CI run is being tracked separately.
 
 ## Continuity note
 
