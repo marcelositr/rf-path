@@ -14,10 +14,7 @@ pub struct GeoPoint {
 
 impl GeoPoint {
     pub fn new(lat_deg: f64, lon_deg: f64) -> Result<Self> {
-        if !lat_deg.is_finite()
-            || !lon_deg.is_finite()
-            || !(-90.0..=90.0).contains(&lat_deg)
-        {
+        if !lat_deg.is_finite() || !lon_deg.is_finite() || !(-90.0..=90.0).contains(&lat_deg) {
             return Err(Error::InvalidInput(format!(
                 "invalid coordinate: {lat_deg},{lon_deg}"
             )));
