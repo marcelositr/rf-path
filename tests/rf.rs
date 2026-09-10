@@ -22,14 +22,9 @@ fn earth_bulge_matches_python_reference_vector() {
 #[test]
 fn reference_path_and_effective_path_match_reference_vectors() {
     let linear = reference_path_elevation_m(100.0, 300.0, 5_000.0, 5_000.0).unwrap();
-    let effective = effective_reference_path_elevation_m(
-        100.0,
-        300.0,
-        5_000.0,
-        5_000.0,
-        DEFAULT_K_FACTOR,
-    )
-    .unwrap();
+    let effective =
+        effective_reference_path_elevation_m(100.0, 300.0, 5_000.0, 5_000.0, DEFAULT_K_FACTOR)
+            .unwrap();
 
     assert_relative_eq!(linear, 200.0, max_relative = 1e-12);
     assert_relative_eq!(effective, 198.528_488_463_349_55, max_relative = 1e-12);
