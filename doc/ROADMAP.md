@@ -75,13 +75,14 @@ Phase 4 was validated by green CI after the formatting correction. The model use
 - [x] Produce summary blocking metrics.
 - [x] Add end-to-end clear/obstructed synthetic-terrain tests.
 - [x] Validate the complete `LinkAnalysis` workflow through green CI (#73).
-- [ ] Cross-check representative end-to-end profiles against Python.
-- [ ] Validate the CLI execution path through green CI.
 - [x] Wire CLI arguments to `analyze_link`.
 - [x] Add first user-visible terminal summary.
 - [x] Diagnose and fix the formatter-only CI regression from #75–#79.
+- [x] Add independent Python-generated end-to-end reference profile.
+- [x] Add Rust differential regression test for the complete 21-sample profile.
+- [ ] Validate the new Rust/Python differential regression through green CI.
 
-The core analysis workflow and CLI wiring are implemented. The remaining Phase 5 work is validation: confirm the post-fix CLI CI and perform the representative Rust/Python end-to-end comparison.
+Phase 5 is otherwise complete: the production analysis workflow and CLI are implemented; the remaining gate is CI validation of the independent differential regression.
 
 ## Phase 6 — Presentation and export
 
