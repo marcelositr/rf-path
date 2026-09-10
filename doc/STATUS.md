@@ -65,10 +65,12 @@ PNG/SVG rendering and GeoJSON export remain separate presentation/export work. T
 - [x] Add an independent Python end-to-end `LinkAnalysis` reference generator.
 - [x] Add the generated 21-sample Rust/Python differential regression vector.
 - [x] Add Rust integration assertions for all reference summary and profile quantities.
+- [x] Diagnose CI #90 as a formatter-only failure in `tests/integration.rs`.
+- [x] Correct the formatter-only failure in the differential integration test.
 
 ## Current task
 
-Validate the new Rust/Python end-to-end differential test through green CI. Then close Phase 5 and move to Phase 6 presentation/export, starting with a terminal profile/details view before image and GeoJSON outputs.
+Validate the corrected Rust/Python end-to-end differential test through green CI. Then close Phase 5 and move to Phase 6 presentation/export, starting with a terminal profile/details view before image and GeoJSON outputs.
 
 ## Known constraints
 
@@ -83,11 +85,11 @@ Validate the new Rust/Python end-to-end differential test through green CI. Then
 
 ## Next recommended task
 
-Verify the current differential test through CI. Once green, mark the representative Rust/Python end-to-end comparison complete, close the remaining Phase 5 validation items, and begin the terminal profile/details renderer in `src/render.rs`.
+Verify the corrected differential test through the current CI run. Once green, mark the representative Rust/Python end-to-end comparison complete, close Phase 5, and begin the terminal profile/details renderer in `src/render.rs`.
 
 ## Validation
 
-CI #81 validated the CLI wiring with formatting, tests, and Clippy green. The current commits add a Python-generated end-to-end reference vector and a Rust integration comparison; post-change CI is pending.
+CI #81 validated the CLI wiring with formatting, tests, and Clippy green. CI #90 failed only at `cargo fmt --check` on the new differential test; the formatter corrections are now committed and the following CI run is pending.
 
 ## Continuity note
 
