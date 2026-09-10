@@ -14,7 +14,11 @@ pub struct GeoPoint {
 
 impl GeoPoint {
     pub fn new(lat_deg: f64, lon_deg: f64) -> Result<Self> {
-        if !lat_deg.is_finite() || !lon_deg.is_finite() || !(-90.0..=90.0).contains(&lat_deg) {
+        if !lat_deg.is_finite()
+            || !lon_deg.is_finite()
+            || !(-90.0..=90.0).contains(&lat_deg)
+            || !(-180.0..=180.0).contains(&lon_deg)
+        {
             return Err(Error::InvalidInput(format!(
                 "invalid coordinate: {lat_deg},{lon_deg}"
             )));
@@ -103,6 +107,11 @@ mod tests {
         let b = GeoPoint::new(0.0, 1.0).unwrap();
         let d = great_circle_distance_m(a, b);
         assert!((d - 111_194.926).abs() < 1.0);
+    }
+
+    #[test]
+    fn invalid_longitude_is_rejected() {
+        assert!(GeoPoint::new(0.0, 181.0).is_err());
     }
 
     #[test]
