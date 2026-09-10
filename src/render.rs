@@ -40,7 +40,9 @@ pub fn render_terminal_profile(analysis: &LinkAnalysis) -> String {
 /// Writes the sampled profile as a PNG chart.
 pub fn render_profile_png(analysis: &LinkAnalysis, output_path: impl AsRef<Path>) -> Result<()> {
     if analysis.samples.is_empty() {
-        return Err(Error::InvalidInput("cannot render an empty link profile".into()));
+        return Err(Error::InvalidInput(
+            "cannot render an empty link profile".into(),
+        ));
     }
     let root = BitMapBackend::new(output_path.as_ref(), (1200, 700)).into_drawing_area();
     render_profile_chart(root, analysis)
@@ -49,7 +51,9 @@ pub fn render_profile_png(analysis: &LinkAnalysis, output_path: impl AsRef<Path>
 /// Writes the sampled profile as an SVG chart.
 pub fn render_profile_svg(analysis: &LinkAnalysis, output_path: impl AsRef<Path>) -> Result<()> {
     if analysis.samples.is_empty() {
-        return Err(Error::InvalidInput("cannot render an empty link profile".into()));
+        return Err(Error::InvalidInput(
+            "cannot render an empty link profile".into(),
+        ));
     }
     let root = SVGBackend::new(output_path.as_ref(), (1200, 700)).into_drawing_area();
     render_profile_chart(root, analysis)
@@ -63,7 +67,11 @@ where
     root.fill(&WHITE)
         .map_err(|error| Error::InvalidInput(format!("failed to initialize chart: {error:?}")))?;
 
-    let max_distance_km = analysis.samples.last().map(|s| s.distance_m / 1_000.0).unwrap_or(0.0);
+    let max_distance_km = analysis
+        .samples
+        .last()
+        .map(|s| s.distance_m / 1_000.0)
+        .unwrap_or(0.0);
     let mut y_min = f64::INFINITY;
     let mut y_max = f64::NEG_INFINITY;
     for sample in &analysis.samples {
@@ -78,13 +86,19 @@ where
         }
     }
     if !y_min.is_finite() || !y_max.is_finite() {
-        return Err(Error::InvalidInput("profile contains non-finite elevation values".into()));
+        return Err(Error::InvalidInput(
+            "profile contains non-finite elevation values".into(),
+        ));
     }
     let span = y_max - y_min;
     let padding = if span > 0.0 { span * 0.08 } else { 1.0 };
     y_min -= padding;
     y_max += padding;
-    let x_max = if max_distance_km > 0.0 { max_distance_km } else { 1.0 };
+    let x_max = if max_distance_km > 0.0 {
+        max_distance_km
+    } else {
+        1.0
+    };
 
     let mut chart = ChartBuilder::on(&root)
         .caption(
@@ -108,14 +122,22 @@ where
         .draw()
         .map_err(|error| Error::InvalidInput(format!("failed to draw chart mesh: {error:?}")))?;
 
-    let terrain = analysis.samples.iter().map(|s| (s.distance_m / 1_000.0, s.terrain_m));
-    let los = analysis.samples.iter().map(|s| (s.distance_m / 1_000.0, s.los_m));
-    let fresnel_upper = analysis.samples.iter().map(|s| {
-        (s.distance_m / 1_000.0, s.los_m + s.fresnel_radius_m)
-    });
-    let fresnel_lower = analysis.samples.iter().map(|s| {
-        (s.distance_m / 1_000.0, s.los_m - s.fresnel_radius_m)
-    });
+    let terrain = analysis
+        .samples
+        .iter()
+        .map(|s| (s.distance_m / 1_000.0, s.terrain_m));
+    let los = analysis
+        .samples
+        .iter()
+        .map(|s| (s.distance_m / 1_000.0, s.los_m));
+    let fresnel_upper = analysis
+        .samples
+        .iter()
+        .map(|s| (s.distance_m / 1_000.0, s.los_m + s.fresnel_radius_m));
+    let fresnel_lower = analysis
+        .samples
+        .iter()
+        .map(|s| (s.distance_m / 1_000.0, s.los_m - s.fresnel_radius_m));
 
     chart
         .draw_series(LineSeries::new(terrain, &BLACK))
