@@ -48,7 +48,7 @@ The Rust foundation, geometry, SRTM terrain layer, and core RF propagation/clear
 
 ## Current task
 
-Complete validation of the new RF primitives through CI, then move into Phase 5: combine geometry, SRTM terrain, and RF calculations into the `LinkAnalysis` result model and auditable sampled profiles.
+Validate the new RF primitives through green CI, then move into Phase 5: combine geometry, SRTM terrain, and RF calculations into the `LinkAnalysis` result model and auditable sampled profiles.
 
 ## Known constraints
 
@@ -65,7 +65,7 @@ Build the `LinkAnalysis` layer around great-circle sampling and `TerrainProvider
 
 ## Validation
 
-CI run #52 for the SRTM validation commit passed the complete required suite. The new effective-Earth and clearance implementation is in commits `b9b57b4ea013f6f8706481156cf60d777aa9c1b8` and `69d67877379daef0444d2c40b9c7d46f67fa5fed`; its CI result is pending. The next green CI run is the gate before declaring the new RF primitives validated.
+CI run #52 for the SRTM validation commit passed the complete required suite. The effective-Earth and clearance implementation is in `src/analysis.rs`, with Python reference formulas in `tools/reference/rf_reference.py` and integration vectors in `tests/rf.rs`. The latest CI run for this RF increment is pending; green CI is required before closing Phase 4.
 
 ## Continuity note
 
