@@ -91,13 +91,8 @@ pub fn terrain_clearance_m(
         ));
     }
     Ok(
-        effective_reference_path_elevation_m(
-            tx_altitude_m,
-            rx_altitude_m,
-            d1_m,
-            d2_m,
-            k_factor,
-        )? - terrain_m,
+        effective_reference_path_elevation_m(tx_altitude_m, rx_altitude_m, d1_m, d2_m, k_factor)?
+            - terrain_m,
     )
 }
 
