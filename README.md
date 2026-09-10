@@ -20,10 +20,13 @@ RF-Path is a Rust CLI focused on terrain-aware radio-link geometry. It samples t
 - Free-space path loss (FSPL).
 - Integrated `LinkAnalysis` profile with worst-point and blocking metrics.
 - CLI execution with an auditable terminal summary.
-
-PNG/SVG rendering and GeoJSON export are planned but are not connected to the CLI yet.
+- Optional detailed terminal profile with `--profile`.
+- PNG and SVG profile rendering with `--output-image`.
+- GeoJSON export of the sampled path and profile with `--export-geojson`.
 
 ## Usage
+
+A complete run can request terminal details plus both export formats:
 
 ```text
 rf-path \
@@ -31,10 +34,21 @@ rf-path \
   --rx="-20.3541,-47.8523,15" \
   --freq=2.4GHz \
   --srtm-dir=./srtm \
-  --samples=500
+  --samples=500 \
+  --profile \
+  --output-image=profile.png \
+  --export-geojson=profile.geojson
 ```
 
 The endpoint format is `latitude,longitude,antenna_height_m`, where antenna height is measured above local terrain.
+
+`--profile` prints every sampled row, including terrain, effective LOS, Fresnel radius, clearance, clearance ratio, and status.
+
+`--output-image` writes the same sampled profile as a graphical chart. The extension selects the backend and must be `.png` or `.svg` (case-insensitive).
+
+`--export-geojson` writes a GeoJSON `FeatureCollection` containing one `LineString` for the path and one `Point` feature per sampled profile row. Global analysis metrics are attached to the path feature, while per-sample values are attached to the corresponding point features.
+
+All presentation and export outputs consume the already-computed `LinkAnalysis`; they do not recalculate the RF or terrain model.
 
 Defaults:
 
