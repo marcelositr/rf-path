@@ -47,9 +47,9 @@ The roadmap is intentionally incremental. Each phase should leave the repository
 - [x] Add Python reference checks for tile/index/interpolation behavior.
 - [x] Add explicit Rust/Python differential vectors for controlled SRTM cases.
 - [x] Strengthen boundary and malformed-fixture coverage.
-- [ ] Validate the complete SRTM test suite through green CI.
+- [x] Validate the complete SRTM test suite through green CI.
 
-Current CI note: run #49 passed formatting and all SRTM tests except the differential-vector test because one vector used an exact north-boundary coordinate outside the single generated tile. The vector has been corrected; green CI remains the gate before advancing to Phase 4.
+Phase 3 was closed by CI run #52, which passed formatting, all tests (including 8 SRTM integration tests), and Clippy.
 
 ## Phase 4 — RF model
 
@@ -62,6 +62,8 @@ Current CI note: run #49 passed formatting and all SRTM tests except the differe
 - [x] Add known-value Rust tests for implemented RF primitives.
 - [x] Add independent Python reference calculations for implemented RF primitives.
 - [ ] Differential-test the complete RF model with explicit tolerances.
+
+**Current focus:** effective Earth radius (`k=4/3` default), LOS/reference path, terrain clearance, and 60% first-Fresnel classification.
 
 ## Phase 5 — Link analysis
 
