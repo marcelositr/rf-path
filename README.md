@@ -11,20 +11,38 @@ RF-Path is a Rust CLI focused on terrain-aware radio-link geometry. It samples t
 - Keep geographic, terrain, RF mathematics, and presentation concerns separated.
 - Provide useful terminal, image, and GeoJSON outputs.
 
-## Planned v1 features
+## Current capabilities
 
 - SRTM3 `.hgt` terrain support.
 - Great-circle path sampling.
 - Effective Earth radius with configurable `k` factor (default `4/3`).
 - First Fresnel-zone radius and 60% clearance classification.
 - Free-space path loss (FSPL).
-- ASCII/terminal profile.
-- PNG/SVG profile rendering.
-- GeoJSON export.
+- Integrated `LinkAnalysis` profile with worst-point and blocking metrics.
+- CLI execution with an auditable terminal summary.
 
-## Status
+PNG/SVG rendering and GeoJSON export are planned but are not connected to the CLI yet.
 
-The project is currently in the documentation and technical-foundation phase. The implementation has not started yet.
+## Usage
+
+```text
+rf-path \
+  --tx="-20.2831,-47.7812,12" \
+  --rx="-20.3541,-47.8523,15" \
+  --freq=2.4GHz \
+  --srtm-dir=./srtm \
+  --samples=500
+```
+
+The endpoint format is `latitude,longitude,antenna_height_m`, where antenna height is measured above local terrain.
+
+Defaults:
+
+- samples: `500`;
+- k-factor: `4/3`;
+- Fresnel clearance threshold: `0.60`.
+
+The supplied SRTM directory must contain the required `.hgt` tiles for all sampled path positions.
 
 ## Documentation
 
