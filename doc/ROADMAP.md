@@ -97,7 +97,9 @@ Phase 5 is closed. The production analysis workflow, CLI wiring, and representat
 - [x] Ensure terminal, image, and GeoJSON outputs consume `LinkAnalysis` data only.
 - [x] Diagnose and correct presentation/export `cargo fmt` regressions in CI #116/#118.
 - [x] Make PNG/SVG rendering independent of installed system fonts.
-- [ ] Validate the complete presentation/export CLI path through green CI.
+- [x] Validate the complete presentation/export path through green CI on `ed2de2c`.
+
+Phase 6 is closed. Presentation and export are implemented, consume the established `LinkAnalysis` result, and pass local and GitHub Actions formatting, test, and Clippy validation.
 
 ## Phase 7 — Hardening
 
