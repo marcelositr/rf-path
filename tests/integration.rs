@@ -156,8 +156,16 @@ fn link_analysis_matches_independent_python_reference_vector() {
     assert_relative_eq!(result.fspl_db, reference.fspl_db, epsilon = 1e-9);
     assert_relative_eq!(result.tx_ground_m, reference.tx_ground_m, epsilon = 1e-12);
     assert_relative_eq!(result.rx_ground_m, reference.rx_ground_m, epsilon = 1e-12);
-    assert_relative_eq!(result.tx_altitude_m, reference.tx_altitude_m, epsilon = 1e-12);
-    assert_relative_eq!(result.rx_altitude_m, reference.rx_altitude_m, epsilon = 1e-12);
+    assert_relative_eq!(
+        result.tx_altitude_m,
+        reference.tx_altitude_m,
+        epsilon = 1e-12
+    );
+    assert_relative_eq!(
+        result.rx_altitude_m,
+        reference.rx_altitude_m,
+        epsilon = 1e-12
+    );
     assert_relative_eq!(result.min_clearance_m, reference.min_clearance_m, epsilon = 1e-9);
     assert_eq!(result.min_clearance_ratio, reference.min_clearance_ratio);
     assert_eq!(result.los_blocked, reference.los_blocked);
@@ -176,10 +184,22 @@ fn link_analysis_matches_independent_python_reference_vector() {
         assert_relative_eq!(actual.position.lon_deg, expected.lon_deg, epsilon = 1e-12);
         assert_relative_eq!(actual.terrain_m, expected.terrain_m, epsilon = 1e-12);
         assert_relative_eq!(actual.los_m, expected.los_m, epsilon = 1e-9);
-        assert_relative_eq!(actual.earth_bulge_m, expected.earth_bulge_m, epsilon = 1e-12);
-        assert_relative_eq!(actual.fresnel_radius_m, expected.fresnel_radius_m, epsilon = 1e-9);
+        assert_relative_eq!(
+            actual.earth_bulge_m,
+            expected.earth_bulge_m,
+            epsilon = 1e-12
+        );
+        assert_relative_eq!(
+            actual.fresnel_radius_m,
+            expected.fresnel_radius_m,
+            epsilon = 1e-9
+        );
         assert_relative_eq!(actual.clearance_m, expected.clearance_m, epsilon = 1e-9);
-        assert_relative_eq!(actual.clearance_ratio, expected.clearance_ratio, epsilon = 1e-9);
+        assert_relative_eq!(
+            actual.clearance_ratio,
+            expected.clearance_ratio,
+            epsilon = 1e-9
+        );
         assert_eq!(format!("{:?}", actual.status), expected.status);
     }
 }
