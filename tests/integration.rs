@@ -186,7 +186,10 @@ fn link_analysis_reports_srtm_nodata_at_endpoint() {
         DEFAULT_FRESNEL_CLEARANCE_RATIO,
     );
 
-    assert!(matches!(result, Err(Error::NoData { lat, lon }) if lat == 1.0 && lon == 0.0));
+    assert!(matches!(
+        result,
+        Err(Error::NoData { lat, lon }) if lat == 1.0 && lon == 0.0
+    ));
     fs::remove_dir_all(directory).unwrap();
 }
 
@@ -203,7 +206,10 @@ fn link_analysis_rejects_non_finite_frequency() {
         DEFAULT_K_FACTOR,
         DEFAULT_FRESNEL_CLEARANCE_RATIO,
     );
-    assert!(matches!(result, Err(Error::InvalidInput(message)) if message == "frequency must be positive"));
+    assert!(matches!(
+        result,
+        Err(Error::InvalidInput(message)) if message == "frequency must be positive"
+    ));
 }
 
 #[test]
@@ -226,5 +232,8 @@ fn link_analysis_rejects_invalid_direct_coordinate() {
         DEFAULT_K_FACTOR,
         DEFAULT_FRESNEL_CLEARANCE_RATIO,
     );
-    assert!(matches!(result, Err(Error::InvalidInput(message)) if message.contains("invalid coordinate")));
+    assert!(matches!(
+        result,
+        Err(Error::InvalidInput(message)) if message.contains("invalid coordinate")
+    ));
 }
