@@ -153,7 +153,7 @@ fn link_analysis_reports_missing_srtm_tile() {
 fn link_analysis_reports_srtm_nodata_at_endpoint() {
     let directory = temp_dir();
     let key = TileKey {
-        south_lat: 0,
+        south_lat: 1,
         west_lon: 0,
     };
     write_uniform_tile(&directory, key, 0);
