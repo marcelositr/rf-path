@@ -49,6 +49,8 @@ The roadmap is intentionally incremental. Each phase should leave the repository
 - [x] Strengthen boundary and malformed-fixture coverage.
 - [ ] Validate the complete SRTM test suite through green CI.
 
+Current CI note: the latest validation attempt reached `cargo test` after formatting passed, exposed two test-fixture/expectation issues, and those issues have been corrected. Green CI remains the gate before advancing to Phase 4.
+
 ## Phase 4 — RF model
 
 - [x] Implement wavelength.
