@@ -14,8 +14,13 @@ pub struct GeoPoint {
 
 impl GeoPoint {
     pub fn new(lat_deg: f64, lon_deg: f64) -> Result<Self> {
-        if !lat_deg.is_finite() || !lon_deg.is_finite() || !(-90.0..=90.0).contains(&lat_deg) {
-            return Err(Error::InvalidInput(format!("invalid coordinate: {lat_deg},{lon_deg}")));
+        if !lat_deg.is_finite()
+            || !lon_deg.is_finite()
+            || !(-90.0..=90.0).contains(&lat_deg)
+        {
+            return Err(Error::InvalidInput(format!(
+                "invalid coordinate: {lat_deg},{lon_deg}"
+            )));
         }
         Ok(Self { lat_deg, lon_deg })
     }
@@ -36,14 +41,15 @@ pub fn great_circle_distance_m(a: GeoPoint, b: GeoPoint) -> f64 {
     let (lat2, lon2) = b.radians();
     let dlat = lat2 - lat1;
     let dlon = lon2 - lon1;
-    let h = (dlat / 2.0).sin().powi(2)
-        + lat1.cos() * lat2.cos() * (dlon / 2.0).sin().powi(2);
+    let h = (dlat / 2.0).sin().powi(2) + lat1.cos() * lat2.cos() * (dlon / 2.0).sin().powi(2);
     2.0 * EARTH_RADIUS_M * h.min(1.0).sqrt().asin()
 }
 
 pub fn great_circle_interpolate(a: GeoPoint, b: GeoPoint, fraction: f64) -> Result<GeoPoint> {
     if !fraction.is_finite() || !(0.0..=1.0).contains(&fraction) {
-        return Err(Error::InvalidInput("interpolation fraction must be in [0,1]".into()));
+        return Err(Error::InvalidInput(
+            "interpolation fraction must be in [0,1]".into(),
+        ));
     }
     let (lat1, lon1) = a.radians();
     let (lat2, lon2) = b.radians();
@@ -57,7 +63,11 @@ pub fn great_circle_interpolate(a: GeoPoint, b: GeoPoint, fraction: f64) -> Resu
         let sin_angle = angle.sin();
         let w1 = ((1.0 - fraction) * angle).sin() / sin_angle;
         let w2 = (fraction * angle).sin() / sin_angle;
-        (w1 * v1[0] + w2 * v2[0], w1 * v1[1] + w2 * v2[1], w1 * v1[2] + w2 * v2[2])
+        (
+            w1 * v1[0] + w2 * v2[0],
+            w1 * v1[1] + w2 * v2[1],
+            w1 * v1[2] + w2 * v2[2],
+        )
     };
     let lat = z.atan2((x * x + y * y).sqrt());
     let lon = y.atan2(x);
