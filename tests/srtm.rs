@@ -1,18 +1,25 @@
 use std::fs::{self, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use approx::assert_relative_eq;
 use rf_path::geo::GeoPoint;
 use rf_path::srtm::{SrtmProvider, TerrainProvider, TileKey, SRTM3_SAMPLES};
 
+static TEMP_COUNTER: AtomicU64 = AtomicU64::new(0);
+
 fn temp_dir() -> PathBuf {
     let nonce = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_nanos();
-    let path = std::env::temp_dir().join(format!("rf-path-srtm-{}-{nonce}", std::process::id()));
+    let counter = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
+    let path = std::env::temp_dir().join(format!(
+        "rf-path-srtm-{}-{nonce}-{counter}",
+        std::process::id()
+    ));
     fs::create_dir_all(&path).unwrap();
     path
 }
@@ -157,8 +164,8 @@ fn interpolation_handles_exact_tile_corners() {
     }
 
     let points = [
-        (GeoPoint::new(1.0, 0.0).unwrap(), 0.0),
-        (GeoPoint::new(1.0, 1.0).unwrap(), 0.0),
+        (GeoPoint::new(1.0, 0.0).unwrap(), 12000.0),
+        (GeoPoint::new(1.0, 1.0).unwrap(), 12000.0),
         (GeoPoint::new(0.0, 0.0).unwrap(), 12000.0),
         (GeoPoint::new(0.0, 1.0).unwrap(), 12000.0),
     ];
