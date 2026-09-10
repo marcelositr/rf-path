@@ -34,7 +34,10 @@ pub fn export_geojson(analysis: &LinkAnalysis, output_path: impl AsRef<Path>) ->
         properties.insert("distance_m".into(), JsonValue::from(sample.distance_m));
         properties.insert("terrain_m".into(), JsonValue::from(sample.terrain_m));
         properties.insert("los_m".into(), JsonValue::from(sample.los_m));
-        properties.insert("earth_bulge_m".into(), JsonValue::from(sample.earth_bulge_m));
+        properties.insert(
+            "earth_bulge_m".into(),
+            JsonValue::from(sample.earth_bulge_m),
+        );
         properties.insert(
             "fresnel_radius_m".into(),
             JsonValue::from(sample.fresnel_radius_m),
@@ -74,8 +77,14 @@ pub fn export_geojson(analysis: &LinkAnalysis, output_path: impl AsRef<Path>) ->
 fn path_properties(analysis: &LinkAnalysis) -> Map<String, JsonValue> {
     let mut properties = Map::new();
     properties.insert("distance_m".into(), JsonValue::from(analysis.distance_m));
-    properties.insert("frequency_hz".into(), JsonValue::from(analysis.frequency_hz));
-    properties.insert("wavelength_m".into(), JsonValue::from(analysis.wavelength_m));
+    properties.insert(
+        "frequency_hz".into(),
+        JsonValue::from(analysis.frequency_hz),
+    );
+    properties.insert(
+        "wavelength_m".into(),
+        JsonValue::from(analysis.wavelength_m),
+    );
     properties.insert("fspl_db".into(), JsonValue::from(analysis.fspl_db));
     properties.insert("los_blocked".into(), JsonValue::from(analysis.los_blocked));
     properties.insert(
@@ -175,10 +184,7 @@ mod tests {
             Value::Point(_)
         ));
         assert_eq!(
-            collection.features[1]
-                .properties
-                .as_ref()
-                .unwrap()["status"],
+            collection.features[1].properties.as_ref().unwrap()["status"],
             JsonValue::from("CLEAR")
         );
 
