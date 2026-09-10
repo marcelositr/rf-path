@@ -189,3 +189,42 @@ fn link_analysis_reports_srtm_nodata_at_endpoint() {
     assert!(matches!(result, Err(Error::NoData { lat, lon }) if lat == 1.0 && lon == 0.0));
     fs::remove_dir_all(directory).unwrap();
 }
+
+#[test]
+fn link_analysis_rejects_non_finite_frequency() {
+    let (tx, rx) = endpoints();
+    let mut terrain = SyntheticTerrain { obstructed: false };
+    let result = analyze_link(
+        &mut terrain,
+        tx,
+        rx,
+        f64::NAN,
+        2,
+        DEFAULT_K_FACTOR,
+        DEFAULT_FRESNEL_CLEARANCE_RATIO,
+    );
+    assert!(matches!(result, Err(Error::InvalidInput(message)) if message == "frequency must be positive"));
+}
+
+#[test]
+fn link_analysis_rejects_invalid_direct_coordinate() {
+    let (_, rx) = endpoints();
+    let tx = AntennaPoint {
+        position: GeoPoint {
+            lat_deg: 91.0,
+            lon_deg: 0.0,
+        },
+        antenna_height_m: 30.0,
+    };
+    let mut terrain = SyntheticTerrain { obstructed: false };
+    let result = analyze_link(
+        &mut terrain,
+        tx,
+        rx,
+        2.4e9,
+        2,
+        DEFAULT_K_FACTOR,
+        DEFAULT_FRESNEL_CLEARANCE_RATIO,
+    );
+    assert!(matches!(result, Err(Error::InvalidInput(message)) if message.contains("invalid coordinate")));
+}
