@@ -37,18 +37,18 @@ mod tests {
     #[test]
     fn wavelength_at_2_4_ghz() {
         let lambda = wavelength_m(2.4e9).unwrap();
-        assert!((lambda - 0.1249135).abs() < 1e-6);
+        assert!((lambda - 0.124913524).abs() < 1e-9);
     }
 
     #[test]
     fn fresnel_radius_at_midpoint() {
         let f = fresnel_radius_m(2.4e9, 500.0, 500.0).unwrap();
-        assert!((f - 3.951_858).abs() < 1e-5);
+        assert!((f - 5.588_235_951).abs() < 1e-9);
     }
 
     #[test]
     fn fspl_is_reasonable() {
         let loss = free_space_path_loss_db(1_000.0, 2.4e9).unwrap();
-        assert!((loss - 100.045_536).abs() < 1e-4);
+        assert!((loss - 100.052_008).abs() < 1e-6);
     }
 }
