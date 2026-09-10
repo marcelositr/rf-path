@@ -105,13 +105,15 @@ Phase 6 is closed. Presentation and export are implemented, consume the establis
 
 - [x] Improve CLI diagnostics.
 - [x] Add malformed-input tests.
-- [ ] Add missing-tile and NoData scenarios.
+- [x] Add missing-tile and NoData scenarios.
 - [ ] Benchmark terrain access.
 - [ ] Review numerical edge cases.
 - [ ] Automate selected Rust/Python differential cases.
 - [ ] Document reproducible validation examples.
 
 The first Phase 7 increment validates analysis controls before terrain access, checks the SRTM directory before analysis, adds destination context to output/export failures, and covers malformed analysis-control inputs. CI run #130 passed formatting, tests, and Clippy after the rustfmt-only correction from #129.
+
+The second Phase 7 increment adds end-to-end coverage for missing SRTM tiles and endpoint `NoData`. The tests verify that terrain access failures remain explicit and that the analysis does not invent replacement elevation data. CI run #137 passed formatting, tests, and Clippy after correcting the synthetic HGT fixture to target the actual south-edge sample cell.
 
 ## Future / explicitly out of v1
 
