@@ -6,9 +6,9 @@
 
 ## Current state
 
-The Rust foundation, geometry, SRTM terrain layer, and RF propagation/clearance primitives are implemented and validated. The project now has the first integrated `LinkAnalysis` workflow: great-circle path sampling, endpoint terrain/absolute antenna altitude calculation, per-sample effective LOS/curvature/Fresnel/clearance values, obstruction classification, worst-point selection, and summary metrics.
+The Rust foundation, geometry, SRTM terrain layer, RF propagation/clearance primitives, and integrated `LinkAnalysis` workflow are implemented and validated. The CLI now parses endpoint/frequency arguments, instantiates the local SRTM provider, runs `analyze_link`, and prints a concise auditable terminal summary.
 
-Deterministic synthetic terrain is used by integration tests so the analysis workflow remains offline and independent of real SRTM datasets. Rendering/export layers are still separate and do not participate in RF calculations.
+PNG/SVG rendering and GeoJSON export remain separate presentation/export work. Their CLI flags are recognized but currently rejected with an explicit message rather than being silently ignored.
 
 ## Completed
 
@@ -47,7 +47,6 @@ Deterministic synthetic terrain is used by integration tests so the analysis wor
 - [x] Implement Clear/FresnelPartial/LineOfSightBlocked classification.
 - [x] Add Rust/Python reference vectors for effective Earth and clearance calculations.
 - [x] Record the effective-Earth curvature convention in `DECISIONS.md`.
-- [x] Correct formatting for the new RF analysis code and integration tests.
 - [x] Validate the RF primitive implementation through green CI.
 - [x] Create `ProfileSample`, `Obstacle`, and `LinkAnalysis` result models.
 - [x] Integrate great-circle sampling with `TerrainProvider`.
@@ -55,10 +54,16 @@ Deterministic synthetic terrain is used by integration tests so the analysis wor
 - [x] Calculate auditable per-sample terrain, effective LOS, Earth bulge, Fresnel radius, clearance, ratio, and status.
 - [x] Identify the minimum-clearance worst point and summary blocking flags.
 - [x] Add deterministic end-to-end integration tests for clear and obstructed synthetic terrain.
+- [x] Validate the complete `LinkAnalysis` workflow through green CI (#73).
+- [x] Parse CLI `lat,lon,height_m` antenna arguments with validation tests.
+- [x] Wire CLI execution into `analyze_link` and `SrtmProvider`.
+- [x] Print first user-visible terminal analysis summary.
+- [x] Explicitly reject not-yet-wired image/GeoJSON output flags.
+- [x] Update README with the current CLI usage and capability status.
 
 ## Current task
 
-Validate the first complete `LinkAnalysis` workflow through green CI. After validation, connect the CLI to this analysis layer and implement the first user-visible summary output.
+Validate the newly wired CLI path through green CI, then complete the remaining Phase 5 validation with a representative end-to-end differential check against the Python reference.
 
 ## Known constraints
 
@@ -66,17 +71,18 @@ Validate the first complete `LinkAnalysis` workflow through green CI. After vali
 - Python reference tooling is development-only and must not become a runtime dependency.
 - SRTM data will be supplied locally and must not be committed to the repository.
 - No real SRTM fixtures are present yet.
-- CLI parsing is currently a structural foundation; full command execution remains pending.
+- The CLI requires a local SRTM directory containing every tile needed by the sampled path.
+- PNG/SVG and GeoJSON output flags are present but intentionally not implemented yet.
 - The effective-Earth model uses the agreed parabolic approximation; a more exact propagation model is future work.
 - Rendering/export must continue consuming `LinkAnalysis` rather than recalculating domain math.
 
 ## Next recommended task
 
-Verify the new end-to-end analysis tests through CI. Once green, wire CLI argument parsing into validated `GeoPoint`/`AntennaPoint` inputs, instantiate `SrtmProvider`, run `analyze_link`, and print a concise auditable summary before implementing PNG/SVG/GeoJSON output.
+Run and close the CLI integration validation through CI, then add a deterministic Rust/Python end-to-end profile comparison. After that, move into Phase 6 presentation/export, starting with the terminal profile/details and then PNG/SVG/GeoJSON.
 
 ## Validation
 
-CI run #52 validated the SRTM phase completely. The RF primitives subsequently passed validation after the formatting correction. The current end-to-end `LinkAnalysis` integration commit adds clear and obstructed synthetic-terrain cases; its CI result is pending and is the gate for closing the initial Phase 5 increment.
+CI run #73 validated the complete `LinkAnalysis` workflow with formatting, tests, and Clippy. The CLI wiring is now in `src/main.rs` and `src/cli.rs`; the resulting validation is pending on the latest CLI commit.
 
 ## Continuity note
 
