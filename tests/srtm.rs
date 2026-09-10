@@ -12,7 +12,10 @@ fn temp_dir() -> PathBuf {
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_nanos();
-    let path = std::env::temp_dir().join(format!("rf-path-srtm-{}-{nonce}", std::process::id()));
+    let path = std::env::temp_dir().join(format!(
+        "rf-path-srtm-{}-{nonce}",
+        std::process::id()
+    ));
     fs::create_dir_all(&path).unwrap();
     path
 }
@@ -47,7 +50,7 @@ fn bilinear_interpolation_respects_hgt_row_orientation() {
         west_lon: 0,
     };
     write_tile(&directory, key, |row, column| {
-        (1000 + row as i16 * 10 + column as i16 * 4)
+        1000 + row as i16 * 10 + column as i16 * 4
     });
 
     let lat = 1.0 - 0.5 / 1200.0;
@@ -79,7 +82,10 @@ fn nodata_is_reported_instead_of_interpolated() {
 
     let point = GeoPoint::new(1.0 - 600.25 / 1200.0, 600.25 / 1200.0).unwrap();
     let mut provider = SrtmProvider::new(&directory);
-    assert!(matches!(provider.elevation_at(point), Err(rf_path::error::Error::NoData { .. })));
+    assert!(matches!(
+        provider.elevation_at(point),
+        Err(rf_path::error::Error::NoData { .. })
+    ));
 
     fs::remove_dir_all(directory).unwrap();
 }
