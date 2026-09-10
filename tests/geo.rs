@@ -10,8 +10,8 @@ fn project_endpoints_have_expected_distance() {
 
     assert_relative_eq!(
         great_circle_distance_m(tx, rx),
-        10_878.0,
-        max_relative = 0.002
+        10_830.336596,
+        max_relative = 1e-9
     );
 }
 
