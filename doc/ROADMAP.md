@@ -80,9 +80,9 @@ Phase 4 was validated by green CI after the formatting correction. The model use
 - [x] Diagnose and fix the formatter-only CI regression from #75–#79.
 - [x] Add independent Python-generated end-to-end reference profile.
 - [x] Add Rust differential regression test for the complete 21-sample profile.
-- [ ] Validate the new Rust/Python differential regression through green CI.
+- [x] Validate the Rust/Python differential regression through green CI (#94).
 
-Phase 5 is otherwise complete: the production analysis workflow and CLI are implemented; the remaining gate is CI validation of the independent differential regression.
+Phase 5 is closed. The production analysis workflow, CLI wiring, and representative end-to-end Rust/Python differential validation are all implemented and validated.
 
 ## Phase 6 — Presentation and export
 
