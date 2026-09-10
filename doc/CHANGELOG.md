@@ -18,6 +18,7 @@ All notable project changes are recorded here.
 - Updated README with the current CLI usage and implementation status.
 - Documented the deterministic end-to-end Python reference vector and regeneration command.
 - Closed Phase 5 and moved the roadmap focus to Phase 6 presentation/export.
+- Documented `--profile`, image outputs, and GeoJSON export in the README.
 
 ### Implementation
 
@@ -31,9 +32,14 @@ All notable project changes are recorded here.
 - Isolated the Rust/Python differential regression in `tests/differential.rs` and compare all end-to-end summary and profile quantities against the Python vector.
 - Added `render_terminal_profile` to render the complete sampled profile as an auditable terminal table.
 - Added the opt-in `--profile` CLI flag for detailed terminal output.
-- Explicitly reject PNG/GeoJSON output flags until presentation/export implementations are connected.
 - Corrected the differential regression import layout to match current rustfmt behavior.
 - Corrected the terminal-profile test line-count expectation and removed unused test imports.
+- Implemented PNG and SVG profile rendering from `LinkAnalysis` samples using Plotters.
+- Added deterministic PNG/SVG renderer tests that verify non-empty output files.
+- Implemented GeoJSON `FeatureCollection` export with a path `LineString` and one profile `Point` per sample.
+- Added GeoJSON parsing/export coverage.
+- Wired `--output-image` into the CLI with explicit `.png`/`.svg` extension validation.
+- Wired `--export-geojson` into the CLI using the same `LinkAnalysis` instance as terminal and image outputs.
 
 ### Validation
 
@@ -44,4 +50,5 @@ All notable project changes are recorded here.
 - CI run #94 passed formatting, all tests, and Clippy, validating the complete current Rust/Python end-to-end differential regression.
 - CI runs #100–#105 exposed repeated formatter-only failures during terminal-profile/differential-test integration; the root cause was the differential-test import layout under current rustfmt 1.98.1.
 - CI run #106 reached `cargo test` after formatting was fixed and exposed a stale terminal-profile test line-count assertion; the test was corrected.
-- CI run #107 validates the corrected terminal-profile test path; its final result is still pending at the time of this documentation update.
+- CI run #107 validated the corrected terminal-profile path with formatting, tests, and Clippy green.
+- The new presentation/export implementation now awaits a fresh CI validation cycle.
